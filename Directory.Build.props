@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <RestorePackagesPath>D:\.nuget\packages</RestorePackagesPath>
+    <NuGetCachePath>D:\.nuget\v3-cache</NuGetCachePath>
+  </PropertyGroup>
+</Project>

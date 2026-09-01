@@ -1,0 +1,6 @@
+@BedayaGroup.API_HostAddress = http://localhost:5212
+
+GET {{BedayaGroup.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "BedayaGroup.Domain/1.0.0": {
+        "runtime": {
+          "BedayaGroup.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "BedayaGroup.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

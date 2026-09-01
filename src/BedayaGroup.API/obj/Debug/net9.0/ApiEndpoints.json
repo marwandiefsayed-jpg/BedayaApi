@@ -1,0 +1,1576 @@
+[
+  {
+    "ContainingType": "BedayaGroup.API.Program\u002B\u003C\u003Ec",
+    "Method": "\u003CMain\u003Eb__0_4",
+    "RelativePath": "",
+    "HttpMethod": "GET",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.AdvancesController",
+    "Method": "GetAdvances",
+    "RelativePath": "api/advances",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "engineerId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "projectId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.Advances.DTOs.AdvanceDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.AdvancesController",
+    "Method": "CreateAdvance",
+    "RelativePath": "api/advances",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Advances.DTOs.CreateAdvanceRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Advances.DTOs.AdvanceDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.AdvancesController",
+    "Method": "GetAdvanceById",
+    "RelativePath": "api/advances/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Advances.DTOs.AdvanceDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.AdvancesController",
+    "Method": "SettleAdvance",
+    "RelativePath": "api/advances/{id}/settle",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Advances.DTOs.SettleAdvanceRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Advances.DTOs.AdvanceDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.AdvancesController",
+    "Method": "GetAdvanceStatement",
+    "RelativePath": "api/advances/{id}/statement",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Advances.DTOs.AdvanceStatementDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.AuditLogsController",
+    "Method": "GetAuditLogs",
+    "RelativePath": "api/auditlogs",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "userId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "entityName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "action",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fromDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.AuditLogs.DTOs.AuditLogDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Auth.DTOs.LoginRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Auth.DTOs.AuthResponse, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.AuthController",
+    "Method": "GetCurrentUser",
+    "RelativePath": "api/auth/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Auth.DTOs.UserDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.CashController",
+    "Method": "RecordExpensePayment",
+    "RelativePath": "api/cash/payments/expense",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Cash.DTOs.RecordExpensePaymentRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Cash.DTOs.CashTransactionDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.CashController",
+    "Method": "GetCashStorages",
+    "RelativePath": "api/cash/storages",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "projectId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[BedayaGroup.Application.Cash.DTOs.CashStorageDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.CashController",
+    "Method": "CreateCashStorage",
+    "RelativePath": "api/cash/storages",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Cash.DTOs.CreateCashStorageRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Cash.DTOs.CashStorageDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.CashController",
+    "Method": "GetCashTransactions",
+    "RelativePath": "api/cash/transactions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "cashStorageId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "projectId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "type",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fromDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.Cash.DTOs.CashTransactionDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.CashController",
+    "Method": "RecordCashTransaction",
+    "RelativePath": "api/cash/transactions",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Cash.DTOs.RecordCashTransactionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Cash.DTOs.CashTransactionDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.DashboardController",
+    "Method": "GetSummary",
+    "RelativePath": "api/dashboard/summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Dashboard.DTOs.DashboardSummaryDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.EngineersController",
+    "Method": "GetEngineers",
+    "RelativePath": "api/engineers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "search",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.Engineers.DTOs.EngineerDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.EngineersController",
+    "Method": "CreateEngineer",
+    "RelativePath": "api/engineers",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Engineers.DTOs.CreateEngineerRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Engineers.DTOs.EngineerDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.EngineersController",
+    "Method": "UpdateEngineer",
+    "RelativePath": "api/engineers/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Engineers.DTOs.UpdateEngineerRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Engineers.DTOs.EngineerDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ExpensesController",
+    "Method": "GetExpenses",
+    "RelativePath": "api/expenses",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "projectId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "floorId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "supplierId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "fromDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.Expenses.DTOs.ExpenseDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ExpensesController",
+    "Method": "CreateExpense",
+    "RelativePath": "api/expenses",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Expenses.DTOs.CreateExpenseRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Expenses.DTOs.ExpenseDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ExpensesController",
+    "Method": "GetExpenseById",
+    "RelativePath": "api/expenses/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Expenses.DTOs.ExpenseDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ExpensesController",
+    "Method": "UpdateExpense",
+    "RelativePath": "api/expenses/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Expenses.DTOs.UpdateExpenseRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Expenses.DTOs.ExpenseDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.FloorsController",
+    "Method": "UpdateFloor",
+    "RelativePath": "api/floors/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Floors.DTOs.UpdateFloorRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Floors.DTOs.FloorDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ProjectsController",
+    "Method": "GetProjects",
+    "RelativePath": "api/projects",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.Projects.DTOs.ProjectDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ProjectsController",
+    "Method": "CreateProject",
+    "RelativePath": "api/projects",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Projects.DTOs.CreateProjectRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Projects.DTOs.ProjectDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ProjectsController",
+    "Method": "GetProjectById",
+    "RelativePath": "api/projects/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Projects.DTOs.ProjectDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ProjectsController",
+    "Method": "UpdateProject",
+    "RelativePath": "api/projects/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Projects.DTOs.UpdateProjectRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Projects.DTOs.ProjectDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ProjectsController",
+    "Method": "GetProjectFinancialSummary",
+    "RelativePath": "api/projects/{id}/financial-summary",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Projects.DTOs.ProjectFinancialSummaryDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ProjectsController",
+    "Method": "GetProjectEngineers",
+    "RelativePath": "api/projects/{projectId}/engineers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "projectId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[BedayaGroup.Application.Engineers.DTOs.ProjectEngineerDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ProjectsController",
+    "Method": "AssignEngineerToProject",
+    "RelativePath": "api/projects/{projectId}/engineers",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "projectId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Engineers.DTOs.AssignEngineerToProjectRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Engineers.DTOs.ProjectEngineerDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ProjectsController",
+    "Method": "GetProjectFloors",
+    "RelativePath": "api/projects/{projectId}/floors",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "projectId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[BedayaGroup.Application.Floors.DTOs.FloorDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ProjectsController",
+    "Method": "CreateProjectFloor",
+    "RelativePath": "api/projects/{projectId}/floors",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "projectId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Floors.DTOs.CreateFloorRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Floors.DTOs.FloorDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ShareholdersController",
+    "Method": "GetShareholders",
+    "RelativePath": "api/shareholders",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "search",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.Shareholders.DTOs.ShareholderDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ShareholdersController",
+    "Method": "CreateShareholder",
+    "RelativePath": "api/shareholders",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Shareholders.DTOs.CreateShareholderRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Shareholders.DTOs.ShareholderDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ShareholdersController",
+    "Method": "GetShareholderById",
+    "RelativePath": "api/shareholders/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Shareholders.DTOs.ShareholderDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ShareholdersController",
+    "Method": "UpdateShareholder",
+    "RelativePath": "api/shareholders/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Shareholders.DTOs.UpdateShareholderRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Shareholders.DTOs.ShareholderDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ShareholdersController",
+    "Method": "RecordContribution",
+    "RelativePath": "api/shareholders/{id}/contributions",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Shareholders.DTOs.RecordShareholderContributionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Shareholders.DTOs.ShareholderContributionDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.ShareholdersController",
+    "Method": "GetShareholderStatement",
+    "RelativePath": "api/shareholders/{id}/statement",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Shareholders.DTOs.ShareholderStatementDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.StoragesController",
+    "Method": "GetStorages",
+    "RelativePath": "api/storages",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "projectId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[BedayaGroup.Application.Storages.DTOs.StorageDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.StoragesController",
+    "Method": "CreateStorage",
+    "RelativePath": "api/storages",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Storages.DTOs.CreateStorageRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Storages.DTOs.StorageDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.StoragesController",
+    "Method": "GetStorageBalances",
+    "RelativePath": "api/storages/{id}/balances",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[BedayaGroup.Application.Storages.DTOs.StorageMaterialBalanceDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.StoragesController",
+    "Method": "GetStorageTransactions",
+    "RelativePath": "api/storages/{id}/transactions",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "materialName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "fromDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.Storages.DTOs.StorageTransactionDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.StoragesController",
+    "Method": "RecordStorageTransaction",
+    "RelativePath": "api/storages/{id}/transactions",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Storages.DTOs.RecordStorageTransactionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Storages.DTOs.StorageTransactionDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.SuppliersController",
+    "Method": "GetSuppliers",
+    "RelativePath": "api/suppliers",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "search",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "type",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.Suppliers.DTOs.SupplierDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.SuppliersController",
+    "Method": "CreateSupplier",
+    "RelativePath": "api/suppliers",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Suppliers.DTOs.CreateSupplierRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Suppliers.DTOs.SupplierDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.SuppliersController",
+    "Method": "GetSupplierById",
+    "RelativePath": "api/suppliers/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Suppliers.DTOs.SupplierDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.SuppliersController",
+    "Method": "UpdateSupplier",
+    "RelativePath": "api/suppliers/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Suppliers.DTOs.UpdateSupplierRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Suppliers.DTOs.SupplierDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.SuppliersController",
+    "Method": "GetSupplierStatement",
+    "RelativePath": "api/suppliers/{id}/statement",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "fromDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Suppliers.DTOs.SupplierStatementDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.UsersController",
+    "Method": "GetUsers",
+    "RelativePath": "api/users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "pageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "pageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "search",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Common.Models.PaginatedList\u00601[[BedayaGroup.Application.Auth.DTOs.UserDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.UsersController",
+    "Method": "CreateUser",
+    "RelativePath": "api/users",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Users.DTOs.CreateUserRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Auth.DTOs.UserDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "BedayaGroup.API.Controllers.UsersController",
+    "Method": "UpdateUser",
+    "RelativePath": "api/users/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "BedayaGroup.Application.Users.DTOs.UpdateUserRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BedayaGroup.Application.Common.Models.ApiResponse\u00601[[BedayaGroup.Application.Auth.DTOs.UserDto, BedayaGroup.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  }
+]
