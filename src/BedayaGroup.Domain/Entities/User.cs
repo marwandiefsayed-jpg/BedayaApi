@@ -13,5 +13,4 @@ public class User : BaseEntity
     public DateTime? LastLoginAt { get; set; }
 
     public Role Role { get; set; } = null!;
-    public ICollection<Project> OwnedProjects { get; set; } = new List<Project>();
 }

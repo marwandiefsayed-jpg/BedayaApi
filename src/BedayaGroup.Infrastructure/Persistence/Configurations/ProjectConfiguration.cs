@@ -30,13 +30,6 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(p => p.Status)
             .HasConversion<int>();
 
-        builder.HasIndex(p => p.ProjectOwnerId);
-
-        builder.HasOne(p => p.ProjectOwner)
-            .WithMany(u => u.OwnedProjects)
-            .HasForeignKey(p => p.ProjectOwnerId)
-            .OnDelete(DeleteBehavior.SetNull);
-
         builder.Property(p => p.RowVersion)
             .IsRowVersion();
     }

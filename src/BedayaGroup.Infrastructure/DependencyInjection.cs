@@ -59,7 +59,7 @@ public static class DependencyInjection
         services.AddAuthorization(options =>
         {
             options.AddPolicy("CompanyOwnerOnly", policy => policy.RequireRole("CompanyOwner"));
-            options.AddPolicy("CompanyOrProjectOwner", policy => policy.RequireRole("CompanyOwner", "ProjectOwner"));
+            options.AddPolicy("CompanyOrProjectOwner", policy => policy.RequireRole("CompanyOwner"));
             options.AddPolicy("FinancialWriteAccess", policy => policy.RequireRole("CompanyOwner", "Calculator"));
             options.AddPolicy("AuthenticatedUser", policy => policy.RequireAuthenticatedUser());
         });

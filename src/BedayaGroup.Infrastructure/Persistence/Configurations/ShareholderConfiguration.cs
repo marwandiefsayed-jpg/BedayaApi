@@ -26,5 +26,12 @@ public class ShareholderConfiguration : IEntityTypeConfiguration<Shareholder>
 
         builder.Property(s => s.RequiredContribution)
             .HasColumnType("decimal(18,2)");
+
+        builder.HasIndex(s => s.ProjectId);
+
+        builder.HasOne(s => s.Project)
+            .WithMany(p => p.Shareholders)
+            .HasForeignKey(s => s.ProjectId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

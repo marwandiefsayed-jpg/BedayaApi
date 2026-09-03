@@ -28,5 +28,12 @@ public class SupplierConfiguration : IEntityTypeConfiguration<Supplier>
 
         builder.Property(s => s.OpeningBalance)
             .HasColumnType("decimal(18,2)");
+
+        builder.HasIndex(s => s.ProjectId);
+
+        builder.HasOne(s => s.Project)
+            .WithMany(p => p.Suppliers)
+            .HasForeignKey(s => s.ProjectId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -43,11 +43,6 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             return ApiResponse<ProjectDto>.FailureResult("كود المشروع مستخدم بالفعل");
         }
 
-        if (req.ProjectOwnerId.HasValue && !await _context.Users.AnyAsync(u => u.Id == req.ProjectOwnerId.Value, cancellationToken))
-        {
-            return ApiResponse<ProjectDto>.FailureResult("مالك المشروع المحدد غير موجود");
-        }
-
         var project = new Project
         {
             Code = req.Code,
@@ -58,7 +53,6 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
             StartDate = req.StartDate,
             ExpectedEndDate = req.ExpectedEndDate,
             Status = ProjectStatus.Planning,
-            ProjectOwnerId = req.ProjectOwnerId,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -68,14 +62,7 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
 
         await _auditService.LogAsync("Create", "Project", project.Id.ToString(), null, new { project.Code, project.Name, project.Budget }, cancellationToken);
 
-        string? ownerName = null;
-        if (project.ProjectOwnerId.HasValue)
-        {
-            var owner = await _context.Users.FindAsync(new object[] { project.ProjectOwnerId.Value }, cancellationToken);
-            ownerName = owner?.FullName;
-        }
-
-        var dto = new ProjectDto(project.Id, project.Code, project.Name, project.Location, project.Description, project.Budget, project.StartDate, project.ExpectedEndDate, project.ActualEndDate, project.Status, project.ProjectOwnerId, ownerName, project.IsActive, project.CreatedAt, 0);
+        var dto = new ProjectDto(project.Id, project.Code, project.Name, project.Location, project.Description, project.Budget, project.StartDate, project.ExpectedEndDate, project.ActualEndDate, project.Status, project.IsActive, project.CreatedAt, 0);
 
         return ApiResponse<ProjectDto>.SuccessResult(dto, "تم إنشاء المشروع بنجاح");
     }
@@ -97,7 +84,6 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     public async Task<ApiResponse<ProjectDto>> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = await _context.Projects
-            .Include(p => p.ProjectOwner)
             .Include(p => p.Floors)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
@@ -107,7 +93,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         }
 
         var req = request.Request;
-        var oldValues = new { project.Name, project.Budget, project.Status, project.ProjectOwnerId };
+        var oldValues = new { project.Name, project.Budget, project.Status };
 
         project.Name = req.Name;
         project.Location = req.Location;
@@ -117,7 +103,6 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         project.ExpectedEndDate = req.ExpectedEndDate;
         project.ActualEndDate = req.ActualEndDate;
         project.Status = req.Status;
-        project.ProjectOwnerId = req.ProjectOwnerId;
         project.IsActive = req.IsActive;
         project.UpdatedAt = DateTime.UtcNow;
 
@@ -125,7 +110,7 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         await _auditService.LogAsync("Update", "Project", project.Id.ToString(), oldValues, new { project.Name, project.Budget, project.Status }, cancellationToken);
 
-        var dto = new ProjectDto(project.Id, project.Code, project.Name, project.Location, project.Description, project.Budget, project.StartDate, project.ExpectedEndDate, project.ActualEndDate, project.Status, project.ProjectOwnerId, project.ProjectOwner?.FullName, project.IsActive, project.CreatedAt, project.Floors.Count);
+        var dto = new ProjectDto(project.Id, project.Code, project.Name, project.Location, project.Description, project.Budget, project.StartDate, project.ExpectedEndDate, project.ActualEndDate, project.Status, project.IsActive, project.CreatedAt, project.Floors.Count);
 
         return ApiResponse<ProjectDto>.SuccessResult(dto, "تم تحديث بيانات المشروع بنجاح");
     }

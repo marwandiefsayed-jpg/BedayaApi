@@ -20,3 +20,15 @@ D:\BedayaGroup\src\BedayaGroup.Domain\obj\Debug\net9.0\BedayaGroup.Domain.dll
 D:\BedayaGroup\src\BedayaGroup.Domain\obj\Debug\net9.0\refint\BedayaGroup.Domain.dll
 D:\BedayaGroup\src\BedayaGroup.Domain\obj\Debug\net9.0\BedayaGroup.Domain.pdb
 D:\BedayaGroup\src\BedayaGroup.Domain\obj\Debug\net9.0\ref\BedayaGroup.Domain.dll
+E:\BedayaApi\src\BedayaGroup.Domain\bin\Debug\net9.0\BedayaGroup.Domain.deps.json
+E:\BedayaApi\src\BedayaGroup.Domain\bin\Debug\net9.0\BedayaGroup.Domain.dll
+E:\BedayaApi\src\BedayaGroup.Domain\bin\Debug\net9.0\BedayaGroup.Domain.pdb
+E:\BedayaApi\src\BedayaGroup.Domain\obj\Debug\net9.0\BedayaGroup.Domain.GeneratedMSBuildEditorConfig.editorconfig
+E:\BedayaApi\src\BedayaGroup.Domain\obj\Debug\net9.0\BedayaGroup.Domain.AssemblyInfoInputs.cache
+E:\BedayaApi\src\BedayaGroup.Domain\obj\Debug\net9.0\BedayaGroup.Domain.AssemblyInfo.cs
+E:\BedayaApi\src\BedayaGroup.Domain\obj\Debug\net9.0\BedayaGroup.Domain.csproj.CoreCompileInputs.cache
+E:\BedayaApi\src\BedayaGroup.Domain\obj\Debug\net9.0\BedayaGroup.Domain.sourcelink.json
+E:\BedayaApi\src\BedayaGroup.Domain\obj\Debug\net9.0\BedayaGroup.Domain.dll
+E:\BedayaApi\src\BedayaGroup.Domain\obj\Debug\net9.0\refint\BedayaGroup.Domain.dll
+E:\BedayaApi\src\BedayaGroup.Domain\obj\Debug\net9.0\BedayaGroup.Domain.pdb
+E:\BedayaApi\src\BedayaGroup.Domain\obj\Debug\net9.0\ref\BedayaGroup.Domain.dll

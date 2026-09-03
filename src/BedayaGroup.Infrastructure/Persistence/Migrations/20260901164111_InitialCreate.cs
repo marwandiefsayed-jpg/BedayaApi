@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -63,6 +63,7 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OwnershipPercentage = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     RequiredContribution = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: true),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -72,6 +73,12 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shareholders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Shareholders_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(

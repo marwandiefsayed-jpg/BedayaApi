@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BedayaGroup.Application.Suppliers.Queries;
 
-public record GetSuppliersQuery(int PageIndex = 1, int PageSize = 10, string? Search = null, SupplierType? Type = null) : IRequest<ApiResponse<PaginatedList<SupplierDto>>>;
+public record GetSuppliersQuery(int PageIndex = 1, int PageSize = 10, string? Search = null, SupplierType? Type = null, int? ProjectId = null) : IRequest<ApiResponse<PaginatedList<SupplierDto>>>;
 
 public class GetSuppliersQueryHandler : IRequestHandler<GetSuppliersQuery, ApiResponse<PaginatedList<SupplierDto>>>
 {
@@ -21,7 +21,7 @@ public class GetSuppliersQueryHandler : IRequestHandler<GetSuppliersQuery, ApiRe
 
     public async Task<ApiResponse<PaginatedList<SupplierDto>>> Handle(GetSuppliersQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Suppliers.Include(s => s.Expenses).ThenInclude(e => e.CashTransactions).AsNoTracking().AsQueryable();
+        var query = _context.Suppliers.Include(s => s.Expenses).ThenInclude(e => e.CashTransactions).Include(s => s.Project).AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -31,6 +31,11 @@ public class GetSuppliersQueryHandler : IRequestHandler<GetSuppliersQuery, ApiRe
         if (request.Type.HasValue)
         {
             query = query.Where(s => s.Type == request.Type.Value);
+        }
+
+        if (request.ProjectId.HasValue)
+        {
+            query = query.Where(s => s.ProjectId == request.ProjectId.Value);
         }
 
         var projectedQuery = query.OrderByDescending(s => s.CreatedAt)
@@ -47,7 +52,9 @@ public class GetSuppliersQueryHandler : IRequestHandler<GetSuppliersQuery, ApiRe
                 s.CreatedAt,
                 s.Expenses.Sum(e => e.TotalAmount),
                 s.Expenses.SelectMany(e => e.CashTransactions).Where(ct => ct.Type == CashTransactionType.ExpensePayment).Sum(ct => ct.Amount),
-                s.OpeningBalance + s.Expenses.Sum(e => e.TotalAmount) - s.Expenses.SelectMany(e => e.CashTransactions).Where(ct => ct.Type == CashTransactionType.ExpensePayment).Sum(ct => ct.Amount)
+                s.OpeningBalance + s.Expenses.Sum(e => e.TotalAmount) - s.Expenses.SelectMany(e => e.CashTransactions).Where(ct => ct.Type == CashTransactionType.ExpensePayment).Sum(ct => ct.Amount),
+                s.ProjectId,
+                s.Project != null ? s.Project.Name : null
             ));
 
         var result = await PaginatedList<SupplierDto>.CreateAsync(projectedQuery, request.PageIndex, request.PageSize, cancellationToken);
@@ -71,6 +78,7 @@ public class GetSupplierByIdQueryHandler : IRequestHandler<GetSupplierByIdQuery,
         var supplier = await _context.Suppliers
             .Include(s => s.Expenses)
             .ThenInclude(e => e.CashTransactions)
+            .Include(s => s.Project)
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
@@ -83,7 +91,7 @@ public class GetSupplierByIdQueryHandler : IRequestHandler<GetSupplierByIdQuery,
         var totalPaid = supplier.Expenses.SelectMany(e => e.CashTransactions).Where(ct => ct.Type == CashTransactionType.ExpensePayment).Sum(ct => ct.Amount);
         var currentBalance = supplier.OpeningBalance + totalExpenses - totalPaid;
 
-        var dto = new SupplierDto(supplier.Id, supplier.Code, supplier.Name, supplier.Type, supplier.Phone, supplier.Address, supplier.OpeningBalance, supplier.Notes, supplier.IsActive, supplier.CreatedAt, totalExpenses, totalPaid, currentBalance);
+        var dto = new SupplierDto(supplier.Id, supplier.Code, supplier.Name, supplier.Type, supplier.Phone, supplier.Address, supplier.OpeningBalance, supplier.Notes, supplier.IsActive, supplier.CreatedAt, totalExpenses, totalPaid, currentBalance, supplier.ProjectId, supplier.Project?.Name);
         return ApiResponse<SupplierDto>.SuccessResult(dto);
     }
 }
@@ -101,7 +109,10 @@ public class GetSupplierStatementQueryHandler : IRequestHandler<GetSupplierState
 
     public async Task<ApiResponse<SupplierStatementDto>> Handle(GetSupplierStatementQuery request, CancellationToken cancellationToken)
     {
-        var supplier = await _context.Suppliers.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.SupplierId, cancellationToken);
+        var supplier = await _context.Suppliers
+            .Include(s => s.Project)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == request.SupplierId, cancellationToken);
         if (supplier == null)
         {
             throw new NotFoundException("المورد غير موجود");
@@ -171,6 +182,8 @@ public class GetSupplierStatementQueryHandler : IRequestHandler<GetSupplierState
             totalInvoiced,
             totalPaid,
             currentBalance,
+            supplier.ProjectId,
+            supplier.Project?.Name,
             calculatedItems
         );
 

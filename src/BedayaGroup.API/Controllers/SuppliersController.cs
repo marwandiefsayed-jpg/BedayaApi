@@ -13,9 +13,9 @@ namespace BedayaGroup.API.Controllers;
 public class SuppliersController : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<PaginatedList<SupplierDto>>>> GetSuppliers([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null, [FromQuery] SupplierType? type = null)
+    public async Task<ActionResult<ApiResponse<PaginatedList<SupplierDto>>>> GetSuppliers([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null, [FromQuery] SupplierType? type = null, [FromQuery] int? projectId = null)
     {
-        var result = await Mediator.Send(new GetSuppliersQuery(pageIndex, pageSize, search, type));
+        var result = await Mediator.Send(new GetSuppliersQuery(pageIndex, pageSize, search, type, projectId));
         return Ok(result);
     }
 

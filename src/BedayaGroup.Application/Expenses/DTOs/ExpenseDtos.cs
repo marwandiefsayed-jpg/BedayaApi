@@ -42,3 +42,12 @@ public record ExpenseDto(
     DateTime CreatedAt,
     string? Notes
 );
+
+public record DailyExpenseGroupDto(
+    DateTime Date,
+    decimal TotalAmount,
+    decimal TotalPaid,
+    decimal TotalRemaining,
+    int ExpenseCount,
+    List<ExpenseDto> Expenses
+);

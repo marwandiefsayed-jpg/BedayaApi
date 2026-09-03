@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BedayaGroup.Application.Shareholders.Queries;
 
-public record GetShareholdersQuery(int PageIndex = 1, int PageSize = 10, string? Search = null) : IRequest<ApiResponse<PaginatedList<ShareholderDto>>>;
+public record GetShareholdersQuery(int PageIndex = 1, int PageSize = 10, string? Search = null, int? ProjectId = null) : IRequest<ApiResponse<PaginatedList<ShareholderDto>>>;
 
 public class GetShareholdersQueryHandler : IRequestHandler<GetShareholdersQuery, ApiResponse<PaginatedList<ShareholderDto>>>
 {
@@ -20,7 +20,15 @@ public class GetShareholdersQueryHandler : IRequestHandler<GetShareholdersQuery,
 
     public async Task<ApiResponse<PaginatedList<ShareholderDto>>> Handle(GetShareholdersQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Shareholders.Include(s => s.ShareholderContributions).AsNoTracking().AsQueryable();
+        var query = _context.Shareholders
+            .Include(s => s.ShareholderContributions)
+            .Include(s => s.Project)
+            .AsNoTracking().AsQueryable();
+
+        if (request.ProjectId.HasValue)
+        {
+            query = query.Where(s => s.ProjectId == request.ProjectId.Value);
+        }
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -37,6 +45,8 @@ public class GetShareholdersQueryHandler : IRequestHandler<GetShareholdersQuery,
                 s.RequiredContribution,
                 s.ShareholderContributions.Sum(c => c.Amount),
                 s.RequiredContribution - s.ShareholderContributions.Sum(c => c.Amount),
+                s.ProjectId,
+                s.Project != null ? s.Project.Name : null,
                 s.Notes,
                 s.IsActive,
                 s.CreatedAt
@@ -62,6 +72,7 @@ public class GetShareholderByIdQueryHandler : IRequestHandler<GetShareholderById
     {
         var s = await _context.Shareholders
             .Include(s => s.ShareholderContributions)
+            .Include(s => s.Project)
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
@@ -73,7 +84,7 @@ public class GetShareholderByIdQueryHandler : IRequestHandler<GetShareholderById
         var contributed = s.ShareholderContributions.Sum(c => c.Amount);
         var remaining = s.RequiredContribution - contributed;
 
-        var dto = new ShareholderDto(s.Id, s.Code, s.Name, s.Phone, s.OwnershipPercentage, s.RequiredContribution, contributed, remaining, s.Notes, s.IsActive, s.CreatedAt);
+        var dto = new ShareholderDto(s.Id, s.Code, s.Name, s.Phone, s.OwnershipPercentage, s.RequiredContribution, contributed, remaining, s.ProjectId, s.Project?.Name, s.Notes, s.IsActive, s.CreatedAt);
         return ApiResponse<ShareholderDto>.SuccessResult(dto);
     }
 }
@@ -91,7 +102,10 @@ public class GetShareholderStatementQueryHandler : IRequestHandler<GetShareholde
 
     public async Task<ApiResponse<ShareholderStatementDto>> Handle(GetShareholderStatementQuery request, CancellationToken cancellationToken)
     {
-        var s = await _context.Shareholders.AsNoTracking().FirstOrDefaultAsync(s => s.Id == request.ShareholderId, cancellationToken);
+        var s = await _context.Shareholders
+            .Include(s => s.Project)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == request.ShareholderId, cancellationToken);
         if (s == null)
         {
             throw new NotFoundException("المساهم غير موجود");
@@ -127,6 +141,8 @@ public class GetShareholderStatementQueryHandler : IRequestHandler<GetShareholde
             s.Id,
             s.Code,
             s.Name,
+            s.ProjectId,
+            s.Project != null ? s.Project.Name : null,
             s.OwnershipPercentage,
             s.RequiredContribution,
             totalContributed,

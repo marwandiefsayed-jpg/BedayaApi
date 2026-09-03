@@ -41,6 +41,15 @@ public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierComman
             return ApiResponse<SupplierDto>.FailureResult("كود المورد مستخدم بالفعل");
         }
 
+        // Validate ProjectId if provided
+        string? projectName = null;
+        if (req.ProjectId.HasValue)
+        {
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == req.ProjectId.Value, cancellationToken);
+            if (project == null) return ApiResponse<SupplierDto>.FailureResult("المشروع المحدد غير موجود");
+            projectName = project.Name;
+        }
+
         var supplier = new Supplier
         {
             Code = req.Code,
@@ -50,6 +59,7 @@ public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierComman
             Address = req.Address,
             OpeningBalance = req.OpeningBalance,
             Notes = req.Notes,
+            ProjectId = req.ProjectId,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -57,9 +67,9 @@ public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierComman
         _context.Suppliers.Add(supplier);
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _auditService.LogAsync("Create", "Supplier", supplier.Id.ToString(), null, new { supplier.Code, supplier.Name, supplier.Type }, cancellationToken);
+        await _auditService.LogAsync("Create", "Supplier", supplier.Id.ToString(), null, new { supplier.Code, supplier.Name, supplier.Type, supplier.ProjectId }, cancellationToken);
 
-        var dto = new SupplierDto(supplier.Id, supplier.Code, supplier.Name, supplier.Type, supplier.Phone, supplier.Address, supplier.OpeningBalance, supplier.Notes, supplier.IsActive, supplier.CreatedAt, 0, 0, supplier.OpeningBalance);
+        var dto = new SupplierDto(supplier.Id, supplier.Code, supplier.Name, supplier.Type, supplier.Phone, supplier.Address, supplier.OpeningBalance, supplier.Notes, supplier.IsActive, supplier.CreatedAt, 0, 0, supplier.OpeningBalance, supplier.ProjectId, projectName);
         return ApiResponse<SupplierDto>.SuccessResult(dto, "تم إضافة المورد بنجاح");
     }
 }
@@ -79,14 +89,32 @@ public class UpdateSupplierCommandHandler : IRequestHandler<UpdateSupplierComman
 
     public async Task<ApiResponse<SupplierDto>> Handle(UpdateSupplierCommand request, CancellationToken cancellationToken)
     {
-        var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
+        var supplier = await _context.Suppliers
+            .Include(s => s.Project)
+            .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
         if (supplier == null)
         {
             throw new NotFoundException("المورد غير موجود");
         }
 
         var req = request.Request;
-        var oldValues = new { supplier.Name, supplier.Type, supplier.OpeningBalance, supplier.IsActive };
+        var oldValues = new { supplier.Name, supplier.Type, supplier.OpeningBalance, supplier.IsActive, supplier.ProjectId };
+
+        // Validate new ProjectId if provided
+        string? projectName = supplier.Project?.Name;
+        if (req.ProjectId != supplier.ProjectId)
+        {
+            if (req.ProjectId.HasValue)
+            {
+                var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == req.ProjectId.Value, cancellationToken);
+                if (project == null) return ApiResponse<SupplierDto>.FailureResult("المشروع المحدد غير موجود");
+                projectName = project.Name;
+            }
+            else
+            {
+                projectName = null;
+            }
+        }
 
         supplier.Name = req.Name;
         supplier.Type = req.Type;
@@ -95,12 +123,13 @@ public class UpdateSupplierCommandHandler : IRequestHandler<UpdateSupplierComman
         supplier.OpeningBalance = req.OpeningBalance;
         supplier.Notes = req.Notes;
         supplier.IsActive = req.IsActive;
+        supplier.ProjectId = req.ProjectId;
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _auditService.LogAsync("Update", "Supplier", supplier.Id.ToString(), oldValues, new { supplier.Name, supplier.Type, supplier.OpeningBalance, supplier.IsActive }, cancellationToken);
+        await _auditService.LogAsync("Update", "Supplier", supplier.Id.ToString(), oldValues, new { supplier.Name, supplier.Type, supplier.OpeningBalance, supplier.IsActive, supplier.ProjectId }, cancellationToken);
 
-        var dto = new SupplierDto(supplier.Id, supplier.Code, supplier.Name, supplier.Type, supplier.Phone, supplier.Address, supplier.OpeningBalance, supplier.Notes, supplier.IsActive, supplier.CreatedAt, 0, 0, supplier.OpeningBalance);
+        var dto = new SupplierDto(supplier.Id, supplier.Code, supplier.Name, supplier.Type, supplier.Phone, supplier.Address, supplier.OpeningBalance, supplier.Notes, supplier.IsActive, supplier.CreatedAt, 0, 0, supplier.OpeningBalance, supplier.ProjectId, projectName);
         return ApiResponse<SupplierDto>.SuccessResult(dto, "تم تحديث بيانات المورد بنجاح");
     }
 }

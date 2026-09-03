@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BedayaGroup.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+28ca0aacdb38ed9f3f8a072799e81aba2acc44cc")]
 [assembly: System.Reflection.AssemblyProductAttribute("BedayaGroup.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BedayaGroup.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

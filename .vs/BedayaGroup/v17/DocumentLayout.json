@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\BedayaGroup\\",
+  "WorkspaceRootPath": "E:\\BedayaApi\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|d:\\bedayagroup\\src\\bedayagroup.api\\bedayagroup.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "AbsoluteMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|e:\\bedayaapi\\src\\bedayagroup.api\\bedayagroup.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|solutionrelative:src\\bedayagroup.api\\bedayagroup.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
   ],
@@ -24,11 +24,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "BedayaGroup.API.csproj",
-              "DocumentMoniker": "D:\\BedayaGroup\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
+              "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
               "RelativeDocumentMoniker": "src\\BedayaGroup.API\\BedayaGroup.API.csproj",
-              "ToolTip": "D:\\BedayaGroup\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
+              "ToolTip": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
               "RelativeToolTip": "src\\BedayaGroup.API\\BedayaGroup.API.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2026-09-01T15:45:52.41Z",
               "EditorCaption": ""

@@ -21,7 +21,7 @@ public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ApiResp
 
     public async Task<ApiResponse<PaginatedList<ProjectDto>>> Handle(GetProjectsQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Projects.Include(p => p.ProjectOwner).Include(p => p.Floors).AsNoTracking().AsQueryable();
+        var query = _context.Projects.Include(p => p.Floors).AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -45,8 +45,6 @@ public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ApiResp
                 p.ExpectedEndDate,
                 p.ActualEndDate,
                 p.Status,
-                p.ProjectOwnerId,
-                p.ProjectOwner != null ? p.ProjectOwner.FullName : null,
                 p.IsActive,
                 p.CreatedAt,
                 p.Floors.Count
@@ -71,7 +69,6 @@ public class GetProjectByIdQueryHandler : IRequestHandler<GetProjectByIdQuery, A
     public async Task<ApiResponse<ProjectDto>> Handle(GetProjectByIdQuery request, CancellationToken cancellationToken)
     {
         var project = await _context.Projects
-            .Include(p => p.ProjectOwner)
             .Include(p => p.Floors)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
@@ -92,8 +89,6 @@ public class GetProjectByIdQueryHandler : IRequestHandler<GetProjectByIdQuery, A
             project.ExpectedEndDate,
             project.ActualEndDate,
             project.Status,
-            project.ProjectOwnerId,
-            project.ProjectOwner?.FullName,
             project.IsActive,
             project.CreatedAt,
             project.Floors.Count

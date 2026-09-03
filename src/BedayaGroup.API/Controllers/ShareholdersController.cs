@@ -12,9 +12,9 @@ namespace BedayaGroup.API.Controllers;
 public class ShareholdersController : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<PaginatedList<ShareholderDto>>>> GetShareholders([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
+    public async Task<ActionResult<ApiResponse<PaginatedList<ShareholderDto>>>> GetShareholders([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null, [FromQuery] int? projectId = null)
     {
-        var result = await Mediator.Send(new GetShareholdersQuery(pageIndex, pageSize, search));
+        var result = await Mediator.Send(new GetShareholdersQuery(pageIndex, pageSize, search, projectId));
         return Ok(result);
     }
 
@@ -26,7 +26,7 @@ public class ShareholdersController : ApiControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "CompanyOwnerOnly")]
+    [Authorize(Policy = "FinancialWriteAccess")]
     public async Task<ActionResult<ApiResponse<ShareholderDto>>> CreateShareholder([FromBody] CreateShareholderRequest request)
     {
         var result = await Mediator.Send(new CreateShareholderCommand(request));
@@ -35,7 +35,7 @@ public class ShareholdersController : ApiControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Policy = "CompanyOwnerOnly")]
+    [Authorize(Policy = "FinancialWriteAccess")]
     public async Task<ActionResult<ApiResponse<ShareholderDto>>> UpdateShareholder(int id, [FromBody] UpdateShareholderRequest request)
     {
         var result = await Mediator.Send(new UpdateShareholderCommand(id, request));

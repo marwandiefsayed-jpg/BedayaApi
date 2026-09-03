@@ -127,3 +127,80 @@ public class GetExpenseByIdQueryHandler : IRequestHandler<GetExpenseByIdQuery, A
         return ApiResponse<ExpenseDto>.SuccessResult(dto);
     }
 }
+
+public record GetDailyExpensesByProjectQuery(int ProjectId, DateTime? FromDate = null, DateTime? ToDate = null) : IRequest<ApiResponse<List<DailyExpenseGroupDto>>>;
+
+public class GetDailyExpensesByProjectQueryHandler : IRequestHandler<GetDailyExpensesByProjectQuery, ApiResponse<List<DailyExpenseGroupDto>>>
+{
+    private readonly IApplicationDbContext _context;
+
+    public GetDailyExpensesByProjectQueryHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<ApiResponse<List<DailyExpenseGroupDto>>> Handle(GetDailyExpensesByProjectQuery request, CancellationToken cancellationToken)
+    {
+        var query = _context.Expenses
+            .Include(e => e.Project)
+            .Include(e => e.Floor)
+            .Include(e => e.Supplier)
+            .Include(e => e.CreatedByUser)
+            .Include(e => e.CashTransactions)
+            .Where(e => e.ProjectId == request.ProjectId)
+            .AsNoTracking();
+
+        if (request.FromDate.HasValue) query = query.Where(e => e.ExpenseDate >= request.FromDate.Value);
+        if (request.ToDate.HasValue) query = query.Where(e => e.ExpenseDate <= request.ToDate.Value);
+
+        var expensesList = await query.ToListAsync(cancellationToken);
+
+        var dailyGroups = expensesList
+            .GroupBy(e => e.ExpenseDate.Date)
+            .OrderByDescending(g => g.Key)
+            .Select(g =>
+            {
+                var items = g.Select(e =>
+                {
+                    var paid = e.CashTransactions.Where(ct => ct.Type == CashTransactionType.ExpensePayment).Sum(ct => ct.Amount);
+                    var remaining = e.TotalAmount - paid;
+                    return new ExpenseDto(
+                        e.Id,
+                        e.ExpenseNumber,
+                        e.ProjectId,
+                        e.Project.Name,
+                        e.FloorId,
+                        e.Floor?.Name,
+                        e.SupplierId,
+                        e.Supplier.Name,
+                        e.ExpenseDate,
+                        e.Description,
+                        e.TotalAmount,
+                        paid,
+                        remaining,
+                        e.Status,
+                        e.CreatedByUserId,
+                        e.CreatedByUser?.FullName ?? "",
+                        e.CreatedAt,
+                        e.Notes
+                    );
+                }).ToList();
+
+                var totalAmt = items.Sum(i => i.TotalAmount);
+                var totalPaid = items.Sum(i => i.PaidAmount);
+                var totalRemaining = items.Sum(i => i.RemainingAmount);
+
+                return new DailyExpenseGroupDto(
+                    g.Key,
+                    totalAmt,
+                    totalPaid,
+                    totalRemaining,
+                    items.Count,
+                    items
+                );
+            })
+            .ToList();
+
+        return ApiResponse<List<DailyExpenseGroupDto>>.SuccessResult(dailyGroups);
+    }
+}

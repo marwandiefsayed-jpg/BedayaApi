@@ -49,6 +49,7 @@ public class CreateShareholderCommandHandler : IRequestHandler<CreateShareholder
             Phone = req.Phone,
             OwnershipPercentage = req.OwnershipPercentage,
             RequiredContribution = req.RequiredContribution,
+            ProjectId = req.ProjectId,
             Notes = req.Notes,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
@@ -57,9 +58,15 @@ public class CreateShareholderCommandHandler : IRequestHandler<CreateShareholder
         _context.Shareholders.Add(shareholder);
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _auditService.LogAsync("Create", "Shareholder", shareholder.Id.ToString(), null, new { shareholder.Code, shareholder.Name, shareholder.RequiredContribution }, cancellationToken);
+        await _auditService.LogAsync("Create", "Shareholder", shareholder.Id.ToString(), null, new { shareholder.Code, shareholder.Name, shareholder.RequiredContribution, shareholder.ProjectId }, cancellationToken);
 
-        var dto = new ShareholderDto(shareholder.Id, shareholder.Code, shareholder.Name, shareholder.Phone, shareholder.OwnershipPercentage, shareholder.RequiredContribution, 0m, shareholder.RequiredContribution, shareholder.Notes, shareholder.IsActive, shareholder.CreatedAt);
+        string? projectName = null;
+        if (shareholder.ProjectId.HasValue)
+        {
+            projectName = await _context.Projects.Where(p => p.Id == shareholder.ProjectId.Value).Select(p => p.Name).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        var dto = new ShareholderDto(shareholder.Id, shareholder.Code, shareholder.Name, shareholder.Phone, shareholder.OwnershipPercentage, shareholder.RequiredContribution, 0m, shareholder.RequiredContribution, shareholder.ProjectId, projectName, shareholder.Notes, shareholder.IsActive, shareholder.CreatedAt);
         return ApiResponse<ShareholderDto>.SuccessResult(dto, "تم إضافة المساهم بنجاح");
     }
 }
@@ -81,6 +88,7 @@ public class UpdateShareholderCommandHandler : IRequestHandler<UpdateShareholder
     {
         var shareholder = await _context.Shareholders
             .Include(s => s.ShareholderContributions)
+            .Include(s => s.Project)
             .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
 
         if (shareholder == null)
@@ -89,23 +97,30 @@ public class UpdateShareholderCommandHandler : IRequestHandler<UpdateShareholder
         }
 
         var req = request.Request;
-        var oldValues = new { shareholder.Name, shareholder.OwnershipPercentage, shareholder.RequiredContribution };
+        var oldValues = new { shareholder.Name, shareholder.OwnershipPercentage, shareholder.RequiredContribution, shareholder.ProjectId };
 
         shareholder.Name = req.Name;
         shareholder.Phone = req.Phone;
         shareholder.OwnershipPercentage = req.OwnershipPercentage;
         shareholder.RequiredContribution = req.RequiredContribution;
+        shareholder.ProjectId = req.ProjectId;
         shareholder.Notes = req.Notes;
         shareholder.IsActive = req.IsActive;
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _auditService.LogAsync("Update", "Shareholder", shareholder.Id.ToString(), oldValues, new { shareholder.Name, shareholder.RequiredContribution }, cancellationToken);
+        await _auditService.LogAsync("Update", "Shareholder", shareholder.Id.ToString(), oldValues, new { shareholder.Name, shareholder.RequiredContribution, shareholder.ProjectId }, cancellationToken);
 
         var contributed = shareholder.ShareholderContributions.Sum(c => c.Amount);
         var remaining = shareholder.RequiredContribution - contributed;
 
-        var dto = new ShareholderDto(shareholder.Id, shareholder.Code, shareholder.Name, shareholder.Phone, shareholder.OwnershipPercentage, shareholder.RequiredContribution, contributed, remaining, shareholder.Notes, shareholder.IsActive, shareholder.CreatedAt);
+        string? projectName = null;
+        if (shareholder.ProjectId.HasValue)
+        {
+            projectName = await _context.Projects.Where(p => p.Id == shareholder.ProjectId.Value).Select(p => p.Name).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        var dto = new ShareholderDto(shareholder.Id, shareholder.Code, shareholder.Name, shareholder.Phone, shareholder.OwnershipPercentage, shareholder.RequiredContribution, contributed, remaining, shareholder.ProjectId, projectName, shareholder.Notes, shareholder.IsActive, shareholder.CreatedAt);
         return ApiResponse<ShareholderDto>.SuccessResult(dto, "تم تحديث بيانات المساهم بنجاح");
     }
 }

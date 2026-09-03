@@ -9,7 +9,8 @@ public record CreateSupplierRequest(
     string? Phone,
     string? Address,
     decimal OpeningBalance,
-    string? Notes
+    string? Notes,
+    int? ProjectId
 );
 
 public record UpdateSupplierRequest(
@@ -19,7 +20,8 @@ public record UpdateSupplierRequest(
     string? Address,
     decimal OpeningBalance,
     string? Notes,
-    bool IsActive
+    bool IsActive,
+    int? ProjectId
 );
 
 public record SupplierDto(
@@ -35,7 +37,9 @@ public record SupplierDto(
     DateTime CreatedAt,
     decimal TotalExpenses,
     decimal TotalPaid,
-    decimal CurrentBalance
+    decimal CurrentBalance,
+    int? ProjectId,
+    string? ProjectName
 );
 
 public record SupplierStatementItemDto(
@@ -57,5 +61,7 @@ public record SupplierStatementDto(
     decimal TotalInvoiced,
     decimal TotalPaid,
     decimal CurrentBalance,
+    int? ProjectId,
+    string? ProjectName,
     List<SupplierStatementItemDto> Items
 );

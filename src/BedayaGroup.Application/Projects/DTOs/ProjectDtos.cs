@@ -9,8 +9,7 @@ public record CreateProjectRequest(
     string? Description,
     decimal Budget,
     DateTime StartDate,
-    DateTime? ExpectedEndDate,
-    int? ProjectOwnerId
+    DateTime? ExpectedEndDate
 );
 
 public record UpdateProjectRequest(
@@ -22,7 +21,6 @@ public record UpdateProjectRequest(
     DateTime? ExpectedEndDate,
     DateTime? ActualEndDate,
     ProjectStatus Status,
-    int? ProjectOwnerId,
     bool IsActive
 );
 
@@ -37,8 +35,6 @@ public record ProjectDto(
     DateTime? ExpectedEndDate,
     DateTime? ActualEndDate,
     ProjectStatus Status,
-    int? ProjectOwnerId,
-    string? ProjectOwnerName,
     bool IsActive,
     DateTime CreatedAt,
     int FloorsCount

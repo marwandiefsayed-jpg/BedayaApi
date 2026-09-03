@@ -43,6 +43,16 @@ public class ExpensesController : ApiControllerBase
         return Ok(result);
     }
 
+    [HttpGet("daily")]
+    public async Task<ActionResult<ApiResponse<List<DailyExpenseGroupDto>>>> GetDailyExpenses(
+        [FromQuery] int projectId,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null)
+    {
+        var result = await Mediator.Send(new GetDailyExpensesByProjectQuery(projectId, fromDate, toDate));
+        return Ok(result);
+    }
+
     [HttpPut("{id}")]
     [Authorize(Policy = "FinancialWriteAccess")]
     public async Task<ActionResult<ApiResponse<ExpenseDto>>> UpdateExpense(int id, [FromBody] UpdateExpenseRequest request)

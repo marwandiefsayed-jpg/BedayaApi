@@ -14,13 +14,13 @@ public class Project : BaseEntity
     public DateTime? ExpectedEndDate { get; set; }
     public DateTime? ActualEndDate { get; set; }
     public ProjectStatus Status { get; set; } = ProjectStatus.Planning;
-    public int? ProjectOwnerId { get; set; }
     public bool IsActive { get; set; } = true;
 
-    public User? ProjectOwner { get; set; }
+    public ICollection<Shareholder> Shareholders { get; set; } = new List<Shareholder>();
     public ICollection<Floor> Floors { get; set; } = new List<Floor>();
     public ICollection<ProjectEngineer> ProjectEngineers { get; set; } = new List<ProjectEngineer>();
     public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
+    public ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
     public ICollection<Advance> Advances { get; set; } = new List<Advance>();
     public ICollection<Storage> Storages { get; set; } = new List<Storage>();
     public ICollection<CashTransaction> CashTransactions { get; set; } = new List<CashTransaction>();

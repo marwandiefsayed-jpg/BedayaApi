@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "H739V60voak=",
+  "dgSpecHash": "fzR0L4JIw1g=",
   "success": true,
-  "projectFilePath": "D:\\BedayaGroup\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
+  "projectFilePath": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
   "expectedPackageFiles": [
     "D:\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "D:\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

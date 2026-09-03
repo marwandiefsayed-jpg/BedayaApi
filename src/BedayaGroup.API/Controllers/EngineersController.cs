@@ -19,7 +19,7 @@ public class EngineersController : ApiControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "CompanyOrProjectOwner")]
+    [Authorize(Policy = "CompanyOwnerOnly")]
     public async Task<ActionResult<ApiResponse<EngineerDto>>> CreateEngineer([FromBody] CreateEngineerRequest request)
     {
         var result = await Mediator.Send(new CreateEngineerCommand(request));
@@ -28,7 +28,7 @@ public class EngineersController : ApiControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Policy = "CompanyOrProjectOwner")]
+    [Authorize(Policy = "CompanyOwnerOnly")]
     public async Task<ActionResult<ApiResponse<EngineerDto>>> UpdateEngineer(int id, [FromBody] UpdateEngineerRequest request)
     {
         var result = await Mediator.Send(new UpdateEngineerCommand(id, request));

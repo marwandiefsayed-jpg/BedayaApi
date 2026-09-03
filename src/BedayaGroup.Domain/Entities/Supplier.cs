@@ -14,5 +14,8 @@ public class Supplier : BaseEntity
     public string? Notes { get; set; }
     public bool IsActive { get; set; } = true;
 
+    public int? ProjectId { get; set; }
+    public Project? Project { get; set; }
+
     public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
 }

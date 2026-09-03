@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\BedayaGroup\\tests\\BedayaGroup.UnitTests\\BedayaGroup.UnitTests.csproj": {}
+    "E:\\BedayaApi\\tests\\BedayaGroup.UnitTests\\BedayaGroup.UnitTests.csproj": {}
   },
   "projects": {
-    "D:\\BedayaGroup\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
+    "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\BedayaGroup\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
+        "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
         "projectName": "BedayaGroup.Application",
-        "projectPath": "D:\\BedayaGroup\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
+        "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
         "packagesPath": "D:\\.nuget\\packages",
-        "outputPath": "D:\\BedayaGroup\\src\\BedayaGroup.Application\\obj\\",
+        "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\PanDa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\E.J.S\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,15 +26,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
-                "projectPath": "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
+              "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
+                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
               }
             }
           }
@@ -84,24 +83,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
+    "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
+        "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
         "projectName": "BedayaGroup.Domain",
-        "projectPath": "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
+        "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
         "packagesPath": "D:\\.nuget\\packages",
-        "outputPath": "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\obj\\",
+        "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\PanDa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\E.J.S\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -110,7 +109,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -150,24 +148,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\BedayaGroup\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj": {
+    "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\BedayaGroup\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj",
+        "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj",
         "projectName": "BedayaGroup.Infrastructure",
-        "projectPath": "D:\\BedayaGroup\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj",
+        "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj",
         "packagesPath": "D:\\.nuget\\packages",
-        "outputPath": "D:\\BedayaGroup\\src\\BedayaGroup.Infrastructure\\obj\\",
+        "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\PanDa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\E.J.S\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -176,18 +174,17 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\BedayaGroup\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
-                "projectPath": "D:\\BedayaGroup\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj"
+              "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
+                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj"
               },
-              "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
-                "projectPath": "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
+              "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
+                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
               }
             }
           }
@@ -253,24 +250,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\BedayaGroup\\tests\\BedayaGroup.UnitTests\\BedayaGroup.UnitTests.csproj": {
+    "E:\\BedayaApi\\tests\\BedayaGroup.UnitTests\\BedayaGroup.UnitTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\BedayaGroup\\tests\\BedayaGroup.UnitTests\\BedayaGroup.UnitTests.csproj",
+        "projectUniqueName": "E:\\BedayaApi\\tests\\BedayaGroup.UnitTests\\BedayaGroup.UnitTests.csproj",
         "projectName": "BedayaGroup.UnitTests",
-        "projectPath": "D:\\BedayaGroup\\tests\\BedayaGroup.UnitTests\\BedayaGroup.UnitTests.csproj",
+        "projectPath": "E:\\BedayaApi\\tests\\BedayaGroup.UnitTests\\BedayaGroup.UnitTests.csproj",
         "packagesPath": "D:\\.nuget\\packages",
-        "outputPath": "D:\\BedayaGroup\\tests\\BedayaGroup.UnitTests\\obj\\",
+        "outputPath": "E:\\BedayaApi\\tests\\BedayaGroup.UnitTests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\PanDa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\E.J.S\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -279,21 +276,20 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\BedayaGroup\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
-                "projectPath": "D:\\BedayaGroup\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj"
+              "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
+                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj"
               },
-              "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
-                "projectPath": "D:\\BedayaGroup\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
+              "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
+                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
               },
-              "D:\\BedayaGroup\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj": {
-                "projectPath": "D:\\BedayaGroup\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj"
+              "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj": {
+                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj"
               }
             }
           }
@@ -353,7 +349,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
