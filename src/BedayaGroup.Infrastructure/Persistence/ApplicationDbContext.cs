@@ -14,9 +14,10 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     }
 
     public DbSet<User> Users => Set<User>();
-    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<Share> Shares => Set<Share>();
+    public DbSet<ProjectInstallment> ProjectInstallments => Set<ProjectInstallment>();
+    public DbSet<ShareholderPaymentAllocation> ShareholderPaymentAllocations => Set<ShareholderPaymentAllocation>();
     public DbSet<Project> Projects => Set<Project>();
-    public DbSet<Floor> Floors => Set<Floor>();
     public DbSet<Supplier> Suppliers => Set<Supplier>();
     public DbSet<Engineer> Engineers => Set<Engineer>();
     public DbSet<ProjectEngineer> ProjectEngineers => Set<ProjectEngineer>();
@@ -25,6 +26,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<CashTransaction> CashTransactions => Set<CashTransaction>();
     public DbSet<Shareholder> Shareholders => Set<Shareholder>();
     public DbSet<ShareholderContribution> ShareholderContributions => Set<ShareholderContribution>();
+    public DbSet<ShareholderInstallmentPenalty> ShareholderInstallmentPenalties => Set<ShareholderInstallmentPenalty>();
     public DbSet<Advance> Advances => Set<Advance>();
     public DbSet<Storage> Storages => Set<Storage>();
     public DbSet<StorageTransaction> StorageTransactions => Set<StorageTransaction>();

@@ -15,7 +15,6 @@ public class ValidationTests
         var request = new CreateExpenseRequest(
             ExpenseNumber: "EXP-001",
             ProjectId: 1,
-            FloorId: null,
             SupplierId: 1,
             ExpenseDate: DateTime.UtcNow,
             Description: "اختبار المصروف",

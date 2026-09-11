@@ -12,7 +12,6 @@ public record GetExpensesQuery(
     int PageIndex = 1,
     int PageSize = 10,
     int? ProjectId = null,
-    int? FloorId = null,
     int? SupplierId = null,
     DateTime? FromDate = null,
     DateTime? ToDate = null,
@@ -32,7 +31,6 @@ public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResp
     {
         var query = _context.Expenses
             .Include(e => e.Project)
-            .Include(e => e.Floor)
             .Include(e => e.Supplier)
             .Include(e => e.CreatedByUser)
             .Include(e => e.CashTransactions)
@@ -40,7 +38,6 @@ public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResp
             .AsQueryable();
 
         if (request.ProjectId.HasValue) query = query.Where(e => e.ProjectId == request.ProjectId.Value);
-        if (request.FloorId.HasValue) query = query.Where(e => e.FloorId == request.FloorId.Value);
         if (request.SupplierId.HasValue) query = query.Where(e => e.SupplierId == request.SupplierId.Value);
         if (request.FromDate.HasValue) query = query.Where(e => e.ExpenseDate >= request.FromDate.Value);
         if (request.ToDate.HasValue) query = query.Where(e => e.ExpenseDate <= request.ToDate.Value);
@@ -52,8 +49,6 @@ public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResp
                 e.ExpenseNumber,
                 e.ProjectId,
                 e.Project.Name,
-                e.FloorId,
-                e.Floor != null ? e.Floor.Name : null,
                 e.SupplierId,
                 e.Supplier.Name,
                 e.ExpenseDate,
@@ -88,7 +83,6 @@ public class GetExpenseByIdQueryHandler : IRequestHandler<GetExpenseByIdQuery, A
     {
         var e = await _context.Expenses
             .Include(e => e.Project)
-            .Include(e => e.Floor)
             .Include(e => e.Supplier)
             .Include(e => e.CreatedByUser)
             .Include(e => e.CashTransactions)
@@ -108,8 +102,6 @@ public class GetExpenseByIdQueryHandler : IRequestHandler<GetExpenseByIdQuery, A
             e.ExpenseNumber,
             e.ProjectId,
             e.Project.Name,
-            e.FloorId,
-            e.Floor?.Name,
             e.SupplierId,
             e.Supplier.Name,
             e.ExpenseDate,
@@ -143,7 +135,6 @@ public class GetDailyExpensesByProjectQueryHandler : IRequestHandler<GetDailyExp
     {
         var query = _context.Expenses
             .Include(e => e.Project)
-            .Include(e => e.Floor)
             .Include(e => e.Supplier)
             .Include(e => e.CreatedByUser)
             .Include(e => e.CashTransactions)
@@ -169,8 +160,6 @@ public class GetDailyExpensesByProjectQueryHandler : IRequestHandler<GetDailyExp
                         e.ExpenseNumber,
                         e.ProjectId,
                         e.Project.Name,
-                        e.FloorId,
-                        e.Floor?.Name,
                         e.SupplierId,
                         e.Supplier.Name,
                         e.ExpenseDate,

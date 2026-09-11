@@ -6,8 +6,6 @@ public record AuthResponse(
     int Id,
     string FullName,
     string Username,
-    string RoleName,
-    int RoleId,
     string Token,
     DateTime ExpiresAt
 );
@@ -17,9 +15,6 @@ public record UserDto(
     string FullName,
     string Username,
     string? Phone,
-    int RoleId,
-    string RoleName,
-    string RoleArabicName,
     bool IsActive,
     DateTime CreatedAt,
     DateTime? LastLoginAt

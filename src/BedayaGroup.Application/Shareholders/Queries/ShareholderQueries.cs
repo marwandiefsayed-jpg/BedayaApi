@@ -7,6 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BedayaGroup.Application.Shareholders.Queries;
 
+// =============================================
+// Shareholder Queries
+// =============================================
+
 public record GetShareholdersQuery(int PageIndex = 1, int PageSize = 10, string? Search = null, int? ProjectId = null) : IRequest<ApiResponse<PaginatedList<ShareholderDto>>>;
 
 public class GetShareholdersQueryHandler : IRequestHandler<GetShareholdersQuery, ApiResponse<PaginatedList<ShareholderDto>>>
@@ -21,7 +25,6 @@ public class GetShareholdersQueryHandler : IRequestHandler<GetShareholdersQuery,
     public async Task<ApiResponse<PaginatedList<ShareholderDto>>> Handle(GetShareholdersQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Shareholders
-            .Include(s => s.ShareholderContributions)
             .Include(s => s.Project)
             .AsNoTracking().AsQueryable();
 
@@ -41,10 +44,7 @@ public class GetShareholdersQueryHandler : IRequestHandler<GetShareholdersQuery,
                 s.Code,
                 s.Name,
                 s.Phone,
-                s.OwnershipPercentage,
-                s.RequiredContribution,
-                s.ShareholderContributions.Sum(c => c.Amount),
-                s.RequiredContribution - s.ShareholderContributions.Sum(c => c.Amount),
+                s.NumberOfShares,
                 s.ProjectId,
                 s.Project != null ? s.Project.Name : null,
                 s.Notes,
@@ -71,23 +71,20 @@ public class GetShareholderByIdQueryHandler : IRequestHandler<GetShareholderById
     public async Task<ApiResponse<ShareholderDto>> Handle(GetShareholderByIdQuery request, CancellationToken cancellationToken)
     {
         var s = await _context.Shareholders
-            .Include(s => s.ShareholderContributions)
-            .Include(s => s.Project)
+            .Include(sh => sh.Project)
             .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(sh => sh.Id == request.Id, cancellationToken);
 
-        if (s == null)
-        {
-            throw new NotFoundException("المساهم غير موجود");
-        }
+        if (s == null) throw new NotFoundException("المساهم غير موجود");
 
-        var contributed = s.ShareholderContributions.Sum(c => c.Amount);
-        var remaining = s.RequiredContribution - contributed;
-
-        var dto = new ShareholderDto(s.Id, s.Code, s.Name, s.Phone, s.OwnershipPercentage, s.RequiredContribution, contributed, remaining, s.ProjectId, s.Project?.Name, s.Notes, s.IsActive, s.CreatedAt);
+        var dto = new ShareholderDto(s.Id, s.Code, s.Name, s.Phone, s.NumberOfShares, s.ProjectId, s.Project?.Name, s.Notes, s.IsActive, s.CreatedAt);
         return ApiResponse<ShareholderDto>.SuccessResult(dto);
     }
 }
+
+// =============================================
+// Full Statement with Installment Breakdown
+// =============================================
 
 public record GetShareholderStatementQuery(int ShareholderId) : IRequest<ApiResponse<ShareholderStatementDto>>;
 
@@ -102,54 +99,172 @@ public class GetShareholderStatementQueryHandler : IRequestHandler<GetShareholde
 
     public async Task<ApiResponse<ShareholderStatementDto>> Handle(GetShareholderStatementQuery request, CancellationToken cancellationToken)
     {
-        var s = await _context.Shareholders
+        var shareholder = await _context.Shareholders
             .Include(s => s.Project)
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == request.ShareholderId, cancellationToken);
-        if (s == null)
-        {
-            throw new NotFoundException("المساهم غير موجود");
-        }
 
+        if (shareholder == null) throw new NotFoundException("المساهم غير موجود");
+
+        // Load installments for the shareholder's project
+        var installments = shareholder.ProjectId.HasValue
+            ? await _context.ProjectInstallments
+                .Include(i => i.Project)
+                .Where(i => i.ProjectId == shareholder.ProjectId.Value && i.IsActive)
+                .OrderBy(i => i.EndDate)
+                .ThenBy(i => i.Id)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken)
+            : new List<Domain.Entities.ProjectInstallment>();
+
+        // Load all allocations for this shareholder
+        var allocations = await _context.ShareholderPaymentAllocations
+            .Include(a => a.ShareholderContribution)
+            .Where(a => a.ShareholderContribution.ShareholderId == request.ShareholderId)
+            .GroupBy(a => a.ProjectInstallmentId)
+            .Select(g => new { InstallmentId = g.Key, TotalPaid = g.Sum(a => a.AmountAllocated) })
+            .ToListAsync(cancellationToken);
+
+        var paidByInstallment = allocations.ToDictionary(x => x.InstallmentId, x => x.TotalPaid);
+
+        // Load penalties for this shareholder (keyed by installment id)
+        var penaltiesRaw = await _context.ShareholderInstallmentPenalties
+            .Where(p => p.ShareholderId == request.ShareholderId)
+            .GroupBy(p => p.ProjectInstallmentId)
+            .Select(g => new { InstallmentId = g.Key, TotalPenalty = g.Sum(p => p.PenaltyAmount) })
+            .ToListAsync(cancellationToken);
+
+        var penaltyByInstallment = penaltiesRaw.ToDictionary(x => x.InstallmentId, x => x.TotalPenalty);
+
+        // Build installment summary list
+        var installmentSummaries = installments.Select(i =>
+        {
+            var baseRequired = i.AmountPerShare * shareholder.NumberOfShares;
+            var penalty = penaltyByInstallment.GetValueOrDefault(i.Id, 0m);
+            var required = baseRequired + penalty;
+            var paid = paidByInstallment.GetValueOrDefault(i.Id, 0m);
+            var remaining = required - paid;
+            var status = paid <= 0
+                ? InstallmentPaymentStatus.Unpaid
+                : paid >= required
+                    ? InstallmentPaymentStatus.FullyPaid
+                    : InstallmentPaymentStatus.PartiallyPaid;
+
+            return new InstallmentSummaryDto(i.Id, i.Name, i.StartDate, i.EndDate, i.AmountPerShare, penalty, required, paid, remaining, status);
+        }).ToList();
+
+        // Load contribution details
         var contributions = await _context.ShareholderContributions
             .Include(sc => sc.Project)
             .Include(sc => sc.Transaction)
             .Include(sc => sc.CreatedByUser)
             .Where(sc => sc.ShareholderId == request.ShareholderId)
             .OrderByDescending(sc => sc.ContributionDate)
-            .Select(sc => new ShareholderContributionDto(
+            .ToListAsync(cancellationToken);
+
+        // For each contribution, find which installment it was primarily targeting
+        var contributionAllocations = await _context.ShareholderPaymentAllocations
+            .Where(a => a.ShareholderContribution.ShareholderId == request.ShareholderId)
+            .Select(a => new { a.ShareholderContributionId, a.ProjectInstallmentId, a.ProjectInstallment.Name, a.AmountAllocated })
+            .ToListAsync(cancellationToken);
+
+        var contribAllocationLookup = contributionAllocations
+            .GroupBy(a => a.ShareholderContributionId)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(a => a.AmountAllocated).First()); // primary allocation
+
+        var contributionDtos = contributions.Select(sc =>
+        {
+            var primaryAlloc = contribAllocationLookup.GetValueOrDefault(sc.Id);
+            return new ShareholderContributionDto(
                 sc.Id,
                 sc.ShareholderId,
-                s.Name,
-                sc.ProjectId,
-                sc.Project != null ? sc.Project.Name : null,
+                shareholder.Name,
+                sc.ProjectId ?? 0,
+                sc.Project?.Name,
+                primaryAlloc?.ProjectInstallmentId ?? 0,
+                primaryAlloc?.Name ?? "",
                 sc.TransactionId,
-                sc.Transaction != null ? sc.Transaction.TransactionNumber : null,
+                sc.Transaction?.TransactionNumber,
                 sc.Amount,
                 sc.ContributionDate,
                 sc.Description,
                 sc.CreatedByUserId,
-                sc.CreatedByUser.FullName,
+                sc.CreatedByUser?.FullName ?? "",
                 sc.CreatedAt
-            ))
-            .ToListAsync(cancellationToken);
+            );
+        }).ToList();
 
-        var totalContributed = contributions.Sum(c => c.Amount);
-        var remaining = s.RequiredContribution - totalContributed;
+        var totalExpected = installmentSummaries.Sum(i => i.RequiredAmount);
+        var totalPaid = installmentSummaries.Sum(i => i.PaidAmount);
+        var totalRemaining = totalExpected - totalPaid;
 
         var statement = new ShareholderStatementDto(
-            s.Id,
-            s.Code,
-            s.Name,
-            s.ProjectId,
-            s.Project != null ? s.Project.Name : null,
-            s.OwnershipPercentage,
-            s.RequiredContribution,
-            totalContributed,
-            remaining,
-            contributions
+            shareholder.Id,
+            shareholder.Code,
+            shareholder.Name,
+            shareholder.NumberOfShares,
+            shareholder.ProjectId,
+            shareholder.Project?.Name,
+            totalExpected,
+            totalPaid,
+            totalRemaining,
+            installmentSummaries,
+            contributionDtos
         );
 
         return ApiResponse<ShareholderStatementDto>.SuccessResult(statement);
+    }
+}
+
+// =============================================
+// Shareholder Contributions Query
+// =============================================
+
+public record GetShareholderContributionsQuery(int ShareholderId, int PageIndex = 1, int PageSize = 10) : IRequest<ApiResponse<PaginatedList<ShareholderContributionDto>>>;
+
+public class GetShareholderContributionsQueryHandler : IRequestHandler<GetShareholderContributionsQuery, ApiResponse<PaginatedList<ShareholderContributionDto>>>
+{
+    private readonly IApplicationDbContext _context;
+
+    public GetShareholderContributionsQueryHandler(IApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<ApiResponse<PaginatedList<ShareholderContributionDto>>> Handle(GetShareholderContributionsQuery request, CancellationToken cancellationToken)
+    {
+        var shareholder = await _context.Shareholders
+            .FirstOrDefaultAsync(s => s.Id == request.ShareholderId, cancellationToken);
+
+        if (shareholder == null) throw new NotFoundException("المساهم غير موجود");
+
+        var query = _context.ShareholderContributions
+            .Include(sc => sc.Project)
+            .Include(sc => sc.Transaction)
+            .Include(sc => sc.CreatedByUser)
+            .Where(sc => sc.ShareholderId == request.ShareholderId)
+            .OrderByDescending(sc => sc.ContributionDate)
+            .AsNoTracking();
+
+        var projected = query.Select(sc => new ShareholderContributionDto(
+            sc.Id,
+            sc.ShareholderId,
+            shareholder.Name,
+            sc.ProjectId ?? 0,
+            sc.Project != null ? sc.Project.Name : null,
+            0,
+            "",
+            sc.TransactionId,
+            sc.Transaction != null ? sc.Transaction.TransactionNumber : null,
+            sc.Amount,
+            sc.ContributionDate,
+            sc.Description,
+            sc.CreatedByUserId,
+            sc.CreatedByUser != null ? sc.CreatedByUser.FullName : "",
+            sc.CreatedAt
+        ));
+
+        var result = await PaginatedList<ShareholderContributionDto>.CreateAsync(projected, request.PageIndex, request.PageSize, cancellationToken);
+        return ApiResponse<PaginatedList<ShareholderContributionDto>>.SuccessResult(result);
     }
 }

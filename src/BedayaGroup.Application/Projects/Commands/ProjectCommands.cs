@@ -16,10 +16,7 @@ public class CreateProjectCommandValidator : AbstractValidator<CreateProjectComm
 {
     public CreateProjectCommandValidator()
     {
-        RuleFor(x => x.Request.Code).NotEmpty().WithMessage("كود المشروع مطلوب");
         RuleFor(x => x.Request.Name).NotEmpty().WithMessage("اسم المشروع مطلوب");
-        RuleFor(x => x.Request.Budget).GreaterThan(0).WithMessage("ميزانية المشروع يجب أن تكون أكبر من صفر");
-        RuleFor(x => x.Request.StartDate).NotEmpty().WithMessage("تاريخ بداية المشروع مطلوب");
     }
 }
 
@@ -38,21 +35,10 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
     {
         var req = request.Request;
 
-        if (await _context.Projects.AnyAsync(p => p.Code == req.Code, cancellationToken))
-        {
-            return ApiResponse<ProjectDto>.FailureResult("كود المشروع مستخدم بالفعل");
-        }
-
         var project = new Project
         {
-            Code = req.Code,
             Name = req.Name,
-            Location = req.Location,
-            Description = req.Description,
-            Budget = req.Budget,
             StartDate = req.StartDate,
-            ExpectedEndDate = req.ExpectedEndDate,
-            Status = ProjectStatus.Planning,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -60,9 +46,9 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         _context.Projects.Add(project);
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _auditService.LogAsync("Create", "Project", project.Id.ToString(), null, new { project.Code, project.Name, project.Budget }, cancellationToken);
+        await _auditService.LogAsync("Create", "Project", project.Id.ToString(), null, new { project.Name, project.StartDate }, cancellationToken);
 
-        var dto = new ProjectDto(project.Id, project.Code, project.Name, project.Location, project.Description, project.Budget, project.StartDate, project.ExpectedEndDate, project.ActualEndDate, project.Status, project.IsActive, project.CreatedAt, 0);
+        var dto = new ProjectDto(project.Id, project.Name, project.StartDate, project.IsActive, project.CreatedAt);
 
         return ApiResponse<ProjectDto>.SuccessResult(dto, "تم إنشاء المشروع بنجاح");
     }
@@ -84,7 +70,6 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
     public async Task<ApiResponse<ProjectDto>> Handle(UpdateProjectCommand request, CancellationToken cancellationToken)
     {
         var project = await _context.Projects
-            .Include(p => p.Floors)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (project == null)
@@ -93,25 +78,124 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         }
 
         var req = request.Request;
-        var oldValues = new { project.Name, project.Budget, project.Status };
+        var oldValues = new { project.Name, project.StartDate, project.IsActive };
 
         project.Name = req.Name;
-        project.Location = req.Location;
-        project.Description = req.Description;
-        project.Budget = req.Budget;
         project.StartDate = req.StartDate;
-        project.ExpectedEndDate = req.ExpectedEndDate;
-        project.ActualEndDate = req.ActualEndDate;
-        project.Status = req.Status;
         project.IsActive = req.IsActive;
         project.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _auditService.LogAsync("Update", "Project", project.Id.ToString(), oldValues, new { project.Name, project.Budget, project.Status }, cancellationToken);
+        await _auditService.LogAsync("Update", "Project", project.Id.ToString(), oldValues, new { project.Name, project.StartDate, project.IsActive }, cancellationToken);
 
-        var dto = new ProjectDto(project.Id, project.Code, project.Name, project.Location, project.Description, project.Budget, project.StartDate, project.ExpectedEndDate, project.ActualEndDate, project.Status, project.IsActive, project.CreatedAt, project.Floors.Count);
+        var dto = new ProjectDto(project.Id, project.Name, project.StartDate, project.IsActive, project.CreatedAt);
 
         return ApiResponse<ProjectDto>.SuccessResult(dto, "تم تحديث بيانات المشروع بنجاح");
+    }
+}
+
+public record DeleteProjectCommand(int Id) : IRequest<ApiResponse<bool>>;
+
+public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand, ApiResponse<bool>>
+{
+    private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
+
+    public DeleteProjectCommandHandler(IApplicationDbContext context, IAuditService auditService)
+    {
+        _context = context;
+        _auditService = auditService;
+    }
+
+    public async Task<ApiResponse<bool>> Handle(DeleteProjectCommand request, CancellationToken cancellationToken)
+    {
+        var project = await _context.Projects
+            .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+
+        if (project == null)
+        {
+            throw new NotFoundException("المشروع غير موجود");
+        }
+
+        int projectId = request.Id;
+
+        // ── 1. Clean up ShareholderPaymentAllocations first (FK to ProjectInstallments) ──
+        var installments = await _context.ProjectInstallments
+            .Where(i => i.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        var installmentIds = installments.Select(i => i.Id).ToList();
+        if (installmentIds.Any())
+        {
+            var allocations = await _context.ShareholderPaymentAllocations
+                .Where(a => installmentIds.Contains(a.ProjectInstallmentId))
+                .ToListAsync(cancellationToken);
+            _context.ShareholderPaymentAllocations.RemoveRange(allocations);
+        }
+
+        // ── 2. Delete ProjectInstallments ──
+        _context.ProjectInstallments.RemoveRange(installments);
+
+        // ── 3. Delete ProjectEngineers (NOT NULL FK) ──
+        var engineers = await _context.ProjectEngineers
+            .Where(pe => pe.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        _context.ProjectEngineers.RemoveRange(engineers);
+
+        // ── 4. Delete Expenses (NOT NULL FK) ──
+        var expenses = await _context.Expenses
+            .Where(e => e.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        _context.Expenses.RemoveRange(expenses);
+
+        // ── 5. Delete Advances (NOT NULL FK) ──
+        var advances = await _context.Advances
+            .Where(a => a.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        _context.Advances.RemoveRange(advances);
+
+        // ── 6. Nullify nullable FK references ──
+        var shareholders = await _context.Shareholders
+            .Where(s => s.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        foreach (var sh in shareholders) sh.ProjectId = null;
+
+        var shareholderContribs = await _context.ShareholderContributions
+            .Where(sc => sc.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        foreach (var sc in shareholderContribs) sc.ProjectId = null;
+
+        var cashTransactions = await _context.CashTransactions
+            .Where(ct => ct.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        foreach (var ct in cashTransactions) ct.ProjectId = null;
+
+        var cashStorages = await _context.CashStorages
+            .Where(cs => cs.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        foreach (var cs in cashStorages) cs.ProjectId = null;
+
+        var suppliers = await _context.Suppliers
+            .Where(s => s.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        foreach (var s in suppliers) s.ProjectId = null;
+
+        var storages = await _context.Storages
+            .Where(s => s.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        foreach (var s in storages) s.ProjectId = null;
+
+        var storageTransactions = await _context.StorageTransactions
+            .Where(st => st.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        foreach (var st in storageTransactions) st.ProjectId = null;
+
+        // ── 7. Finally delete the project ──
+        _context.Projects.Remove(project);
+
+        await _context.SaveChangesAsync(cancellationToken);
+        await _auditService.LogAsync("Delete", "Project", project.Id.ToString(), new { project.Name }, null, cancellationToken);
+
+        return ApiResponse<bool>.SuccessResult(true, "تم حذف المشروع بنجاح");
     }
 }

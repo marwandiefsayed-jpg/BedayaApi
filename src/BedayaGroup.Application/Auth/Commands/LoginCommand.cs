@@ -44,7 +44,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ApiResponse<Aut
     public async Task<ApiResponse<AuthResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await _context.Users
-            .Include(u => u.Role)
             .FirstOrDefaultAsync(u => u.Username == request.Username, cancellationToken);
 
         if (user == null || !_passwordHasher.VerifyPassword(request.Password, user.PasswordHash))
@@ -69,8 +68,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ApiResponse<Aut
             user.Id,
             user.FullName,
             user.Username,
-            user.Role.Name,
-            user.RoleId,
             token,
             expiresAt
         );

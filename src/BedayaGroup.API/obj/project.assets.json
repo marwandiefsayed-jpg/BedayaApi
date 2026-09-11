@@ -5640,11 +5640,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\BedayaApi\\src\\bedayagroup.api\\BedayaGroup.API.csproj",
+      "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
       "projectName": "BedayaGroup.API",
-      "projectPath": "E:\\BedayaApi\\src\\bedayagroup.api\\BedayaGroup.API.csproj",
+      "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
       "packagesPath": "D:\\.nuget\\packages",
-      "outputPath": "E:\\BedayaApi\\src\\bedayagroup.api\\obj\\",
+      "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

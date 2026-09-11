@@ -8,9 +8,10 @@ namespace BedayaGroup.Application.Common.Interfaces;
 public interface IApplicationDbContext
 {
     DbSet<User> Users { get; }
-    DbSet<Role> Roles { get; }
+    DbSet<Share> Shares { get; }
+    DbSet<ProjectInstallment> ProjectInstallments { get; }
+    DbSet<ShareholderPaymentAllocation> ShareholderPaymentAllocations { get; }
     DbSet<Project> Projects { get; }
-    DbSet<Floor> Floors { get; }
     DbSet<Supplier> Suppliers { get; }
     DbSet<Engineer> Engineers { get; }
     DbSet<ProjectEngineer> ProjectEngineers { get; }
@@ -19,6 +20,7 @@ public interface IApplicationDbContext
     DbSet<CashTransaction> CashTransactions { get; }
     DbSet<Shareholder> Shareholders { get; }
     DbSet<ShareholderContribution> ShareholderContributions { get; }
+    DbSet<ShareholderInstallmentPenalty> ShareholderInstallmentPenalties { get; }
     DbSet<Advance> Advances { get; }
     DbSet<Storage> Storages { get; }
     DbSet<StorageTransaction> StorageTransactions { get; }

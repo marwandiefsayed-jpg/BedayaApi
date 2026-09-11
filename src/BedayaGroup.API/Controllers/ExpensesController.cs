@@ -17,13 +17,12 @@ public class ExpensesController : ApiControllerBase
         [FromQuery] int pageIndex = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] int? projectId = null,
-        [FromQuery] int? floorId = null,
         [FromQuery] int? supplierId = null,
         [FromQuery] DateTime? fromDate = null,
         [FromQuery] DateTime? toDate = null,
         [FromQuery] ExpenseStatus? status = null)
     {
-        var result = await Mediator.Send(new GetExpensesQuery(pageIndex, pageSize, projectId, floorId, supplierId, fromDate, toDate, status));
+        var result = await Mediator.Send(new GetExpensesQuery(pageIndex, pageSize, projectId, supplierId, fromDate, toDate, status));
         return Ok(result);
     }
 

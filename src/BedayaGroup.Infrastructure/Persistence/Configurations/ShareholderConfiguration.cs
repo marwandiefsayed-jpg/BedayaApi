@@ -21,11 +21,13 @@ public class ShareholderConfiguration : IEntityTypeConfiguration<Shareholder>
             .IsRequired()
             .HasMaxLength(150);
 
-        builder.Property(s => s.OwnershipPercentage)
-            .HasColumnType("decimal(18,2)");
+        builder.Property(s => s.NumberOfShares)
+            .HasColumnType("decimal(18,4)");
 
-        builder.Property(s => s.RequiredContribution)
-            .HasColumnType("decimal(18,2)");
+        builder.HasOne(s => s.Share)
+            .WithMany(sh => sh.Shareholders)
+            .HasForeignKey(s => s.ShareId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(s => s.ProjectId);
 

@@ -21,7 +21,7 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
     public async Task<ApiResponse<DashboardSummaryDto>> Handle(GetDashboardSummaryQuery request, CancellationToken cancellationToken)
     {
         var totalProjects = await _context.Projects.CountAsync(cancellationToken);
-        var activeProjects = await _context.Projects.CountAsync(p => p.Status == ProjectStatus.Active, cancellationToken);
+        var activeProjects = await _context.Projects.CountAsync(p => p.IsActive, cancellationToken);
 
         var totalExpenses = await _context.Expenses.SumAsync(e => (decimal?)e.TotalAmount, cancellationToken) ?? 0m;
 
@@ -45,8 +45,13 @@ public class GetDashboardSummaryQueryHandler : IRequestHandler<GetDashboardSumma
 
         var totalCashBalance = cashStoragesOpening + totalCashIn - totalCashOut;
 
-        // Shareholder Outstanding
-        var reqShareholderContributions = await _context.Shareholders.SumAsync(s => (decimal?)s.RequiredContribution, cancellationToken) ?? 0m;
+        // Shareholder Outstanding - expected = sum of (installment.AmountPerShare * shareholder.NumberOfShares) for all installments
+        var reqShareholderContributions = await _context.ProjectInstallments
+            .Join(_context.Shareholders,
+                i => i.ProjectId,
+                s => s.ProjectId,
+                (i, s) => i.AmountPerShare * s.NumberOfShares)
+            .SumAsync(cancellationToken);
         var actualShareholderContributions = await _context.ShareholderContributions.SumAsync(sc => (decimal?)sc.Amount, cancellationToken) ?? 0m;
         var totalShareholderOutstanding = reqShareholderContributions - actualShareholderContributions;
 

@@ -24,7 +24,6 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .HasConversion<int>();
 
         builder.HasIndex(e => e.ProjectId);
-        builder.HasIndex(e => e.FloorId);
         builder.HasIndex(e => e.SupplierId);
         builder.HasIndex(e => e.ExpenseDate);
 
@@ -32,11 +31,6 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
             .WithMany(p => p.Expenses)
             .HasForeignKey(e => e.ProjectId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(e => e.Floor)
-            .WithMany(f => f.Expenses)
-            .HasForeignKey(e => e.FloorId)
-            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(e => e.Supplier)
             .WithMany(s => s.Expenses)

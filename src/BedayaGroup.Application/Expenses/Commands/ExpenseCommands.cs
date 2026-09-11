@@ -52,15 +52,6 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
             return ApiResponse<ExpenseDto>.FailureResult("المشروع المحدد غير موجود");
         }
 
-        if (req.FloorId.HasValue)
-        {
-            var floorExists = await _context.Floors.AnyAsync(f => f.Id == req.FloorId.Value && f.ProjectId == req.ProjectId, cancellationToken);
-            if (!floorExists)
-            {
-                return ApiResponse<ExpenseDto>.FailureResult("الدور المحدد لا ينتمي إلى هذا المشروع");
-            }
-        }
-
         var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == req.SupplierId, cancellationToken);
         if (supplier == null)
         {
@@ -73,7 +64,6 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
         {
             ExpenseNumber = req.ExpenseNumber,
             ProjectId = req.ProjectId,
-            FloorId = req.FloorId,
             SupplierId = req.SupplierId,
             ExpenseDate = req.ExpenseDate,
             Description = req.Description,
@@ -89,7 +79,6 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
 
         await _auditService.LogAsync("Create", "Expense", expense.Id.ToString(), null, new { expense.ExpenseNumber, expense.TotalAmount, expense.ProjectId, expense.SupplierId }, cancellationToken);
 
-        var floorName = req.FloorId.HasValue ? (await _context.Floors.FindAsync(new object[] { req.FloorId.Value }, cancellationToken))?.Name : null;
         var user = await _context.Users.FindAsync(new object[] { currentUserId }, cancellationToken);
 
         var dto = new ExpenseDto(
@@ -97,8 +86,6 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
             expense.ExpenseNumber,
             expense.ProjectId,
             project.Name,
-            expense.FloorId,
-            floorName,
             expense.SupplierId,
             supplier.Name,
             expense.ExpenseDate,
@@ -134,7 +121,6 @@ public class UpdateExpenseCommandHandler : IRequestHandler<UpdateExpenseCommand,
     {
         var expense = await _context.Expenses
             .Include(e => e.Project)
-            .Include(e => e.Floor)
             .Include(e => e.Supplier)
             .Include(e => e.CreatedByUser)
             .Include(e => e.CashTransactions)
@@ -158,7 +144,6 @@ public class UpdateExpenseCommandHandler : IRequestHandler<UpdateExpenseCommand,
 
         var oldValues = new { expense.TotalAmount, expense.Description, expense.SupplierId };
 
-        expense.FloorId = req.FloorId;
         expense.SupplierId = req.SupplierId;
         expense.ExpenseDate = req.ExpenseDate;
         expense.Description = req.Description;
@@ -180,8 +165,6 @@ public class UpdateExpenseCommandHandler : IRequestHandler<UpdateExpenseCommand,
             expense.ExpenseNumber,
             expense.ProjectId,
             expense.Project.Name,
-            expense.FloorId,
-            expense.Floor?.Name,
             expense.SupplierId,
             expense.Supplier.Name,
             expense.ExpenseDate,

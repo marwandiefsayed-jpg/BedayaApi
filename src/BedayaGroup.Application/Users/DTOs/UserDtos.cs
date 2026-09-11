@@ -4,14 +4,12 @@ public record CreateUserRequest(
     string FullName,
     string Username,
     string Password,
-    string? Phone,
-    int RoleId
+    string? Phone
 );
 
 public record UpdateUserRequest(
     string FullName,
     string? Phone,
-    int RoleId,
     bool IsActive
 );
 

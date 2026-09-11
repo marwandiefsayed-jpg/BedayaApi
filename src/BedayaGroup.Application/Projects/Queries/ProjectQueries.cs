@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BedayaGroup.Application.Projects.Queries;
 
-public record GetProjectsQuery(int PageIndex = 1, int PageSize = 10, string? Search = null, ProjectStatus? Status = null) : IRequest<ApiResponse<PaginatedList<ProjectDto>>>;
+public record GetProjectsQuery(int PageIndex = 1, int PageSize = 10, string? Search = null) : IRequest<ApiResponse<PaginatedList<ProjectDto>>>;
 
 public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ApiResponse<PaginatedList<ProjectDto>>>
 {
@@ -21,33 +21,20 @@ public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ApiResp
 
     public async Task<ApiResponse<PaginatedList<ProjectDto>>> Handle(GetProjectsQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Projects.Include(p => p.Floors).AsNoTracking().AsQueryable();
+        var query = _context.Projects.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            query = query.Where(p => p.Name.Contains(request.Search) || p.Code.Contains(request.Search) || (p.Location != null && p.Location.Contains(request.Search)));
-        }
-
-        if (request.Status.HasValue)
-        {
-            query = query.Where(p => p.Status == request.Status.Value);
+            query = query.Where(p => p.Name.Contains(request.Search));
         }
 
         var projectedQuery = query.OrderByDescending(p => p.CreatedAt)
             .Select(p => new ProjectDto(
                 p.Id,
-                p.Code,
                 p.Name,
-                p.Location,
-                p.Description,
-                p.Budget,
                 p.StartDate,
-                p.ExpectedEndDate,
-                p.ActualEndDate,
-                p.Status,
                 p.IsActive,
-                p.CreatedAt,
-                p.Floors.Count
+                p.CreatedAt
             ));
 
         var result = await PaginatedList<ProjectDto>.CreateAsync(projectedQuery, request.PageIndex, request.PageSize, cancellationToken);
@@ -69,7 +56,6 @@ public class GetProjectByIdQueryHandler : IRequestHandler<GetProjectByIdQuery, A
     public async Task<ApiResponse<ProjectDto>> Handle(GetProjectByIdQuery request, CancellationToken cancellationToken)
     {
         var project = await _context.Projects
-            .Include(p => p.Floors)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
@@ -80,18 +66,10 @@ public class GetProjectByIdQueryHandler : IRequestHandler<GetProjectByIdQuery, A
 
         var dto = new ProjectDto(
             project.Id,
-            project.Code,
             project.Name,
-            project.Location,
-            project.Description,
-            project.Budget,
             project.StartDate,
-            project.ExpectedEndDate,
-            project.ActualEndDate,
-            project.Status,
             project.IsActive,
-            project.CreatedAt,
-            project.Floors.Count
+            project.CreatedAt
         );
 
         return ApiResponse<ProjectDto>.SuccessResult(dto);
@@ -138,19 +116,14 @@ public class GetProjectFinancialSummaryQueryHandler : IRequestHandler<GetProject
             .Where(ct => ct.ProjectId == request.ProjectId && (ct.Type == CashTransactionType.CashOut || ct.Type == CashTransactionType.ExpensePayment || ct.Type == CashTransactionType.AdvanceGiven || ct.Type == CashTransactionType.OtherExpense))
             .SumAsync(ct => (decimal?)ct.Amount, cancellationToken) ?? 0m;
 
-        var remainingBudget = project.Budget - totalExpenses;
-
         var summary = new ProjectFinancialSummaryDto(
             project.Id,
-            project.Code,
             project.Name,
-            project.Budget,
             totalExpenses,
             totalPaidExpenses,
             totalOutstandingExpenses,
             cashIn,
-            cashOut,
-            remainingBudget
+            cashOut
         );
 
         return ApiResponse<ProjectFinancialSummaryDto>.SuccessResult(summary);

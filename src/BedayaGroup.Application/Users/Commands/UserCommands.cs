@@ -19,7 +19,6 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
         RuleFor(x => x.Request.FullName).NotEmpty().WithMessage("الاسم بالكامل مطلوب");
         RuleFor(x => x.Request.Username).NotEmpty().WithMessage("اسم المستخدم مطلوب");
         RuleFor(x => x.Request.Password).NotEmpty().WithMessage("كلمة المرور مطلوبة").MinimumLength(6).WithMessage("كلمة المرور يجب أن لا تقل عن 6 أحرف");
-        RuleFor(x => x.Request.RoleId).GreaterThan(0).WithMessage("معرف الدور غير صحيح");
     }
 }
 
@@ -45,11 +44,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ApiRe
             return ApiResponse<UserDto>.FailureResult("اسم المستخدم مستخدم بالفعل");
         }
 
-        var role = await _context.Roles.FindAsync(new object[] { req.RoleId }, cancellationToken);
-        if (role == null)
-        {
-            return ApiResponse<UserDto>.FailureResult("الدور المحدد غير موجود");
-        }
 
         var user = new User
         {
@@ -57,7 +51,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ApiRe
             Username = req.Username,
             PasswordHash = _passwordHasher.HashPassword(req.Password),
             Phone = req.Phone,
-            RoleId = req.RoleId,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -65,9 +58,9 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ApiRe
         _context.Users.Add(user);
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _auditService.LogAsync("Create", "User", user.Id.ToString(), null, new { user.Username, user.FullName, role.Name }, cancellationToken);
+        await _auditService.LogAsync("Create", "User", user.Id.ToString(), null, new { user.Username, user.FullName }, cancellationToken);
 
-        var dto = new UserDto(user.Id, user.FullName, user.Username, user.Phone, user.RoleId, role.Name, role.ArabicName, user.IsActive, user.CreatedAt, user.LastLoginAt);
+        var dto = new UserDto(user.Id, user.FullName, user.Username, user.Phone, user.IsActive, user.CreatedAt, user.LastLoginAt);
         return ApiResponse<UserDto>.SuccessResult(dto, "تم إنشاء المستخدم بنجاح");
     }
 }
@@ -87,27 +80,24 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ApiRe
 
     public async Task<ApiResponse<UserDto>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
         if (user == null)
         {
             throw new NotFoundException("المستخدم غير موجود");
         }
 
-        var oldValues = new { user.FullName, user.Phone, user.RoleId, user.IsActive };
+        var oldValues = new { user.FullName, user.Phone, user.IsActive };
 
         user.FullName = request.Request.FullName;
         user.Phone = request.Request.Phone;
-        user.RoleId = request.Request.RoleId;
         user.IsActive = request.Request.IsActive;
         user.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        var role = await _context.Roles.FindAsync(new object[] { user.RoleId }, cancellationToken);
+        await _auditService.LogAsync("Update", "User", user.Id.ToString(), oldValues, new { user.FullName, user.Phone, user.IsActive }, cancellationToken);
 
-        await _auditService.LogAsync("Update", "User", user.Id.ToString(), oldValues, new { user.FullName, user.Phone, user.RoleId, user.IsActive }, cancellationToken);
-
-        var dto = new UserDto(user.Id, user.FullName, user.Username, user.Phone, user.RoleId, role?.Name ?? "", role?.ArabicName ?? "", user.IsActive, user.CreatedAt, user.LastLoginAt);
+        var dto = new UserDto(user.Id, user.FullName, user.Username, user.Phone, user.IsActive, user.CreatedAt, user.LastLoginAt);
         return ApiResponse<UserDto>.SuccessResult(dto, "تم تحديث بيانات المستخدم بنجاح");
     }
 }

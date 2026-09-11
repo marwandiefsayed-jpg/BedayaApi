@@ -49,7 +49,9 @@ public record SupplierStatementItemDto(
     string Description,
     decimal DebtAmount,   // قيمة المصروف (له)
     decimal CreditAmount, // سداد نقدي (عليه)
-    decimal RunningBalance
+    decimal RunningBalance,
+    int? ProjectId,
+    string? ProjectName
 );
 
 public record SupplierStatementDto(

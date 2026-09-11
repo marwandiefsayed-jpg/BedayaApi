@@ -19,7 +19,7 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, ApiResponse<P
 
     public async Task<ApiResponse<PaginatedList<UserDto>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Users.Include(u => u.Role).AsNoTracking().AsQueryable();
+        var query = _context.Users.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
@@ -32,9 +32,6 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, ApiResponse<P
                 u.FullName,
                 u.Username,
                 u.Phone,
-                u.RoleId,
-                u.Role.Name,
-                u.Role.ArabicName,
                 u.IsActive,
                 u.CreatedAt,
                 u.LastLoginAt

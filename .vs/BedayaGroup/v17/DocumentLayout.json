@@ -3,6 +3,13 @@
   "WorkspaceRootPath": "E:\\BedayaApi\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{FB1399B0-2227-41EC-9016-E2EF00A973D4}|src\\BedayaGroup.Application\\BedayaGroup.Application.csproj|e:\\bedayaapi\\src\\bedayagroup.application\\shareholders\\commands\\shareholdercommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FB1399B0-2227-41EC-9016-E2EF00A973D4}|src\\BedayaGroup.Application\\BedayaGroup.Application.csproj|solutionrelative:src\\bedayagroup.application\\shareholders\\commands\\shareholdercommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Visual Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|e:\\bedayaapi\\src\\bedayagroup.api\\bedayagroup.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|solutionrelative:src\\bedayagroup.api\\bedayagroup.api.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     }
@@ -23,6 +30,31 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "ShareholderCommands.cs",
+              "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
+              "RelativeDocumentMoniker": "src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
+              "ToolTip": "E:\\BedayaApi\\src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
+              "RelativeToolTip": "src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAAAawCsAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-10T00:50:50.827Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Microsoft.CSharp.Core.targets",
+              "DocumentMoniker": "E:\\Visual Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
+              "RelativeDocumentMoniker": "..\\Visual Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
+              "ToolTip": "E:\\Visual Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
+              "RelativeToolTip": "..\\Visual Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
+              "ViewState": "AgIAAEcAAAAAAAAAAAAuwFMAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
+              "WhenOpened": "2026-09-07T00:17:51.412Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "BedayaGroup.API.csproj",
               "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
               "RelativeDocumentMoniker": "src\\BedayaGroup.API\\BedayaGroup.API.csproj",
@@ -30,8 +62,7 @@
               "RelativeToolTip": "src\\BedayaGroup.API\\BedayaGroup.API.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-09-01T15:45:52.41Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-01T15:45:52.41Z"
             }
           ]
         },

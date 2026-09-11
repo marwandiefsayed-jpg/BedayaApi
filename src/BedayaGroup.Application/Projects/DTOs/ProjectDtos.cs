@@ -3,52 +3,30 @@ using BedayaGroup.Domain.Enums;
 namespace BedayaGroup.Application.Projects.DTOs;
 
 public record CreateProjectRequest(
-    string Code,
     string Name,
-    string? Location,
-    string? Description,
-    decimal Budget,
-    DateTime StartDate,
-    DateTime? ExpectedEndDate
+    DateTime? StartDate
 );
 
 public record UpdateProjectRequest(
     string Name,
-    string? Location,
-    string? Description,
-    decimal Budget,
-    DateTime StartDate,
-    DateTime? ExpectedEndDate,
-    DateTime? ActualEndDate,
-    ProjectStatus Status,
+    DateTime? StartDate,
     bool IsActive
 );
 
 public record ProjectDto(
     int Id,
-    string Code,
     string Name,
-    string? Location,
-    string? Description,
-    decimal Budget,
-    DateTime StartDate,
-    DateTime? ExpectedEndDate,
-    DateTime? ActualEndDate,
-    ProjectStatus Status,
+    DateTime? StartDate,
     bool IsActive,
-    DateTime CreatedAt,
-    int FloorsCount
+    DateTime CreatedAt
 );
 
 public record ProjectFinancialSummaryDto(
     int ProjectId,
-    string ProjectCode,
     string ProjectName,
-    decimal ProjectBudget,
     decimal TotalExpenses,
     decimal TotalPaidExpenses,
     decimal TotalOutstandingExpenses,
     decimal CashIn,
-    decimal CashOut,
-    decimal RemainingBudget
+    decimal CashOut
 );

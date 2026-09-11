@@ -19,7 +19,8 @@ public static class DependencyInjection
             ?? "Server=(localdb)\\mssqllocaldb;Database=BedayaGroupDb;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True";
 
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+            options.UseSqlServer(connectionString, b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
+                   .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -55,12 +56,12 @@ public static class DependencyInjection
             };
         });
 
-        // Role-based Authorization Policies
+        // Authorization Policies (Roles removed - all authenticated users have access)
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("CompanyOwnerOnly", policy => policy.RequireRole("CompanyOwner"));
-            options.AddPolicy("CompanyOrProjectOwner", policy => policy.RequireRole("CompanyOwner"));
-            options.AddPolicy("FinancialWriteAccess", policy => policy.RequireRole("CompanyOwner", "Calculator"));
+            options.AddPolicy("CompanyOwnerOnly", policy => policy.RequireAuthenticatedUser());
+            options.AddPolicy("CompanyOrProjectOwner", policy => policy.RequireAuthenticatedUser());
+            options.AddPolicy("FinancialWriteAccess", policy => policy.RequireAuthenticatedUser());
             options.AddPolicy("AuthenticatedUser", policy => policy.RequireAuthenticatedUser());
         });
 

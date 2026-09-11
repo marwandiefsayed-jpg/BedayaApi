@@ -5,7 +5,6 @@ namespace BedayaGroup.Application.Expenses.DTOs;
 public record CreateExpenseRequest(
     string ExpenseNumber,
     int ProjectId,
-    int? FloorId,
     int SupplierId,
     DateTime ExpenseDate,
     string Description,
@@ -14,7 +13,6 @@ public record CreateExpenseRequest(
 );
 
 public record UpdateExpenseRequest(
-    int? FloorId,
     int SupplierId,
     DateTime ExpenseDate,
     string Description,
@@ -27,8 +25,6 @@ public record ExpenseDto(
     string ExpenseNumber,
     int ProjectId,
     string ProjectName,
-    int? FloorId,
-    string? FloorName,
     int SupplierId,
     string SupplierName,
     DateTime ExpenseDate,

@@ -35,13 +35,17 @@ public class FinancialCalculationTests
     [Fact]
     public void ShareholderRemaining_ShouldCalculateCorrectly()
     {
-        // Arrange
+        // Arrange - new model: required = NumberOfShares * installment.AmountPerShare
         var shareholder = new Shareholder
         {
-            RequiredContribution = 500000m,
+            NumberOfShares = 2.5m,
+            ShareId = 1,
             Code = "SH-01",
             Name = "أحمد علي"
         };
+
+        decimal amountPerShare = 200000m; // e.g., installment amount per share
+        decimal requiredContribution = shareholder.NumberOfShares * amountPerShare; // = 500000
 
         var contributions = new List<ShareholderContribution>
         {
@@ -50,7 +54,7 @@ public class FinancialCalculationTests
 
         // Act
         var totalContributed = contributions.Sum(c => c.Amount);
-        var remaining = shareholder.RequiredContribution - totalContributed;
+        var remaining = requiredContribution - totalContributed;
 
         // Assert
         totalContributed.Should().Be(300000m);

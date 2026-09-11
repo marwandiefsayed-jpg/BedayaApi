@@ -6,9 +6,6 @@ using BedayaGroup.Application.Engineers.DTOs;
 using BedayaGroup.Application.Engineers.Queries;
 using BedayaGroup.Application.Expenses.DTOs;
 using BedayaGroup.Application.Expenses.Queries;
-using BedayaGroup.Application.Floors.Commands;
-using BedayaGroup.Application.Floors.DTOs;
-using BedayaGroup.Application.Floors.Queries;
 using BedayaGroup.Application.Projects.Commands;
 using BedayaGroup.Application.Projects.DTOs;
 using BedayaGroup.Application.Projects.Queries;
@@ -27,9 +24,9 @@ namespace BedayaGroup.API.Controllers;
 public class ProjectsController : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<PaginatedList<ProjectDto>>>> GetProjects([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null, [FromQuery] ProjectStatus? status = null)
+    public async Task<ActionResult<ApiResponse<PaginatedList<ProjectDto>>>> GetProjects([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10, [FromQuery] string? search = null)
     {
-        var result = await Mediator.Send(new GetProjectsQuery(pageIndex, pageSize, search, status));
+        var result = await Mediator.Send(new GetProjectsQuery(pageIndex, pageSize, search));
         return Ok(result);
     }
 
@@ -54,6 +51,15 @@ public class ProjectsController : ApiControllerBase
     public async Task<ActionResult<ApiResponse<ProjectDto>>> UpdateProject(int id, [FromBody] UpdateProjectRequest request)
     {
         var result = await Mediator.Send(new UpdateProjectCommand(id, request));
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "FinancialWriteAccess")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteProject(int id)
+    {
+        var result = await Mediator.Send(new DeleteProjectCommand(id));
         if (!result.Success) return BadRequest(result);
         return Ok(result);
     }
@@ -92,24 +98,6 @@ public class ProjectsController : ApiControllerBase
     public async Task<ActionResult<ApiResponse<PaginatedList<AdvanceDto>>>> GetProjectAdvances(int projectId, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] AdvanceStatus? status = null)
     {
         var result = await Mediator.Send(new GetAdvancesQuery(pageIndex, pageSize, null, projectId, status));
-        return Ok(result);
-    }
-
-    // Floors under Project
-    [HttpGet("{projectId}/floors")]
-    public async Task<ActionResult<ApiResponse<List<FloorDto>>>> GetProjectFloors(int projectId)
-    {
-        var result = await Mediator.Send(new GetFloorsByProjectQuery(projectId));
-        return Ok(result);
-    }
-
-    [HttpPost("{projectId}/floors")]
-    [Authorize(Policy = "FinancialWriteAccess")]
-    public async Task<ActionResult<ApiResponse<FloorDto>>> CreateProjectFloor(int projectId, [FromBody] CreateFloorRequest request)
-    {
-        if (projectId != request.ProjectId) return BadRequest(ApiResponse.FailureResult("معرف المشروع غير متطابق"));
-        var result = await Mediator.Send(new CreateFloorCommand(request));
-        if (!result.Success) return BadRequest(result);
         return Ok(result);
     }
 

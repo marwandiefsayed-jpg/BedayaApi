@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BedayaGroup.UnitTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+28ca0aacdb38ed9f3f8a072799e81aba2acc44cc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+73c13934577f9b8540bbaeba25cf63c34938d329")]
 [assembly: System.Reflection.AssemblyProductAttribute("BedayaGroup.UnitTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BedayaGroup.UnitTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

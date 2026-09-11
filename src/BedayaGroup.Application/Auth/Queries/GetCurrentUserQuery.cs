@@ -28,7 +28,6 @@ public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, A
         }
 
         var user = await _context.Users
-            .Include(u => u.Role)
             .FirstOrDefaultAsync(u => u.Id == _currentUserService.UserId.Value, cancellationToken);
 
         if (user == null)
@@ -41,9 +40,6 @@ public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, A
             user.FullName,
             user.Username,
             user.Phone,
-            user.RoleId,
-            user.Role.Name,
-            user.Role.ArabicName,
             user.IsActive,
             user.CreatedAt,
             user.LastLoginAt
