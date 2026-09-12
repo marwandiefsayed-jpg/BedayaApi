@@ -9,7 +9,11 @@ public record CreateExpenseRequest(
     DateTime ExpenseDate,
     string Description,
     decimal TotalAmount,
-    string? Notes
+    string? Notes,
+    string MaterialName = "",
+    string Unit = "",
+    decimal Quantity = 0m,
+    decimal UnitPrice = 0m
 );
 
 public record UpdateExpenseRequest(
@@ -17,7 +21,11 @@ public record UpdateExpenseRequest(
     DateTime ExpenseDate,
     string Description,
     decimal TotalAmount,
-    string? Notes
+    string? Notes,
+    string MaterialName = "",
+    string Unit = "",
+    decimal Quantity = 0m,
+    decimal UnitPrice = 0m
 );
 
 public record ExpenseDto(
@@ -36,7 +44,11 @@ public record ExpenseDto(
     int CreatedByUserId,
     string CreatedByUserName,
     DateTime CreatedAt,
-    string? Notes
+    string? Notes,
+    string? MaterialName = null,
+    string? Unit = null,
+    decimal Quantity = 0m,
+    decimal UnitPrice = 0m
 );
 
 public record DailyExpenseGroupDto(

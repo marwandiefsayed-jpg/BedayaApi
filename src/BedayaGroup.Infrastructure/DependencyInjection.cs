@@ -27,6 +27,8 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IAuditService, AuditService>();
+        services.AddScoped<IReceiptsPdfGenerator, ReceiptsPdfGenerator>();
+        services.AddScoped<ISupplierStatementPdfGenerator, SupplierStatementPdfGenerator>();
         services.AddHttpContextAccessor();
 
         // JWT Authentication Setup

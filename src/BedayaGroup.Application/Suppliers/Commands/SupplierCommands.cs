@@ -35,13 +35,21 @@ public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierComman
     public async Task<ApiResponse<SupplierDto>> Handle(CreateSupplierCommand request, CancellationToken cancellationToken)
     {
         var req = request.Request;
+        var supplierCode = string.IsNullOrWhiteSpace(req.Code)
+            ? $"SUP-{DateTime.UtcNow:yyyyMMddHHmmssfff}"
+            : req.Code.Trim();
 
-        if (await _context.Suppliers.AnyAsync(s => s.Code == req.Code, cancellationToken))
+        if (await _context.Suppliers.AnyAsync(s => s.Code == supplierCode, cancellationToken))
         {
             return ApiResponse<SupplierDto>.FailureResult("كود المورد مستخدم بالفعل");
         }
 
-        // Validate ProjectId if provided
+        if (!req.ProjectId.HasValue)
+        {
+            return ApiResponse<SupplierDto>.FailureResult("يجب ربط المورد بمشروع");
+        }
+
+        // Validate project relationship
         string? projectName = null;
         if (req.ProjectId.HasValue)
         {
@@ -52,12 +60,12 @@ public class CreateSupplierCommandHandler : IRequestHandler<CreateSupplierComman
 
         var supplier = new Supplier
         {
-            Code = req.Code,
-            Name = req.Name,
+            Code = supplierCode,
+            Name = req.Name.Trim(),
             Type = req.Type,
             Phone = req.Phone,
             Address = req.Address,
-            OpeningBalance = req.OpeningBalance,
+            OpeningBalance = 0m,
             Notes = req.Notes,
             ProjectId = req.ProjectId,
             IsActive = true,
@@ -98,6 +106,11 @@ public class UpdateSupplierCommandHandler : IRequestHandler<UpdateSupplierComman
         }
 
         var req = request.Request;
+
+        if (!req.ProjectId.HasValue)
+        {
+            return ApiResponse<SupplierDto>.FailureResult("يجب ربط المورد بمشروع");
+        }
         var oldValues = new { supplier.Name, supplier.Type, supplier.OpeningBalance, supplier.IsActive, supplier.ProjectId };
 
         // Validate new ProjectId if provided

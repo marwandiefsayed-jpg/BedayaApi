@@ -41,6 +41,11 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
     {
         var req = request.Request;
 
+        if (string.IsNullOrWhiteSpace(req.MaterialName) || string.IsNullOrWhiteSpace(req.Unit) || req.Quantity <= 0 || req.UnitPrice <= 0)
+        {
+            return ApiResponse<ExpenseDto>.FailureResult("بيانات المادة ووحدة القياس والكمية وسعر الوحدة مطلوبة");
+        }
+
         if (await _context.Expenses.AnyAsync(e => e.ExpenseNumber == req.ExpenseNumber, cancellationToken))
         {
             return ApiResponse<ExpenseDto>.FailureResult("رقم المصروف مستخدم بالفعل");
@@ -58,6 +63,11 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
             return ApiResponse<ExpenseDto>.FailureResult("المورد المحدد غير موجود");
         }
 
+        if (supplier.ProjectId != req.ProjectId)
+        {
+            return ApiResponse<ExpenseDto>.FailureResult("المورد المحدد لا ينتمي إلى المشروع المختار");
+        }
+
         var currentUserId = _currentUserService.UserId ?? 1;
 
         var expense = new Expense
@@ -67,7 +77,11 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
             SupplierId = req.SupplierId,
             ExpenseDate = req.ExpenseDate,
             Description = req.Description,
-            TotalAmount = req.TotalAmount,
+            MaterialName = req.MaterialName.Trim(),
+            Unit = req.Unit.Trim(),
+            Quantity = req.Quantity,
+            UnitPrice = req.UnitPrice,
+            TotalAmount = req.Quantity * req.UnitPrice,
             CreatedByUserId = currentUserId,
             Notes = req.Notes,
             Status = ExpenseStatus.Due,
@@ -97,7 +111,11 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
             expense.CreatedByUserId,
             user?.FullName ?? "",
             expense.CreatedAt,
-            expense.Notes
+            expense.Notes,
+            expense.MaterialName,
+            expense.Unit,
+            expense.Quantity,
+            expense.UnitPrice
         );
 
         return ApiResponse<ExpenseDto>.SuccessResult(dto, "تم تسجيل المصروف بنجاح");
@@ -133,11 +151,26 @@ public class UpdateExpenseCommandHandler : IRequestHandler<UpdateExpenseCommand,
 
         var req = request.Request;
 
+        if (string.IsNullOrWhiteSpace(req.MaterialName) || string.IsNullOrWhiteSpace(req.Unit) || req.Quantity <= 0 || req.UnitPrice <= 0)
+        {
+            return ApiResponse<ExpenseDto>.FailureResult("بيانات المادة ووحدة القياس والكمية وسعر الوحدة مطلوبة");
+        }
+
+        var supplier = await _context.Suppliers
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == req.SupplierId, cancellationToken);
+        if (supplier == null || supplier.ProjectId != expense.ProjectId)
+        {
+            return ApiResponse<ExpenseDto>.FailureResult("المورد المحدد لا ينتمي إلى مشروع المصروف");
+        }
+
+        var calculatedTotal = req.Quantity * req.UnitPrice;
+
         var paidAmount = expense.CashTransactions
             .Where(ct => ct.Type == CashTransactionType.ExpensePayment)
             .Sum(ct => ct.Amount);
 
-        if (req.TotalAmount < paidAmount)
+        if (calculatedTotal < paidAmount)
         {
             return ApiResponse<ExpenseDto>.FailureResult("إجمالي المبلغ الجديد أقل من المدفوعات المسجلة بالفعل على هذا المصروف");
         }
@@ -147,7 +180,11 @@ public class UpdateExpenseCommandHandler : IRequestHandler<UpdateExpenseCommand,
         expense.SupplierId = req.SupplierId;
         expense.ExpenseDate = req.ExpenseDate;
         expense.Description = req.Description;
-        expense.TotalAmount = req.TotalAmount;
+        expense.MaterialName = req.MaterialName.Trim();
+        expense.Unit = req.Unit.Trim();
+        expense.Quantity = req.Quantity;
+        expense.UnitPrice = req.UnitPrice;
+        expense.TotalAmount = calculatedTotal;
         expense.Notes = req.Notes;
         expense.UpdatedAt = DateTime.UtcNow;
 
@@ -176,7 +213,11 @@ public class UpdateExpenseCommandHandler : IRequestHandler<UpdateExpenseCommand,
             expense.CreatedByUserId,
             expense.CreatedByUser.FullName,
             expense.CreatedAt,
-            expense.Notes
+            expense.Notes,
+            expense.MaterialName,
+            expense.Unit,
+            expense.Quantity,
+            expense.UnitPrice
         );
 
         return ApiResponse<ExpenseDto>.SuccessResult(dto, "تم تحديث المصروف بنجاح");

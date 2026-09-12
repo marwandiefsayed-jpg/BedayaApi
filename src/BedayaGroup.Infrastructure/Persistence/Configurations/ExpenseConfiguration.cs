@@ -20,6 +20,18 @@ public class ExpenseConfiguration : IEntityTypeConfiguration<Expense>
         builder.Property(e => e.TotalAmount)
             .HasColumnType("decimal(18,2)");
 
+        builder.Property(e => e.Quantity)
+            .HasColumnType("decimal(18,3)");
+
+        builder.Property(e => e.UnitPrice)
+            .HasColumnType("decimal(18,2)");
+
+        builder.Property(e => e.MaterialName)
+            .HasMaxLength(200);
+
+        builder.Property(e => e.Unit)
+            .HasMaxLength(50);
+
         builder.Property(e => e.Status)
             .HasConversion<int>();
 

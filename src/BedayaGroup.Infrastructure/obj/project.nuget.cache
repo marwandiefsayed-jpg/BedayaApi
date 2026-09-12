@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "y4HaM4esgHE=",
+  "dgSpecHash": "TK2Ls6VZFfM=",
   "success": true,
   "projectFilePath": "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -52,6 +52,7 @@
     "D:\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "D:\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "D:\\.nuget\\packages\\mono.texttemplating\\3.0.0\\mono.texttemplating.3.0.0.nupkg.sha512",
+    "D:\\.nuget\\packages\\questpdf\\2025.1.0\\questpdf.2025.1.0.nupkg.sha512",
     "D:\\.nuget\\packages\\system.clientmodel\\1.0.0\\system.clientmodel.1.0.0.nupkg.sha512",
     "D:\\.nuget\\packages\\system.codedom\\6.0.0\\system.codedom.6.0.0.nupkg.sha512",
     "D:\\.nuget\\packages\\system.collections.immutable\\7.0.0\\system.collections.immutable.7.0.0.nupkg.sha512",

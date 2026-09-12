@@ -10,6 +10,10 @@ public class Expense : BaseEntity
     public int SupplierId { get; set; }
     public DateTime ExpenseDate { get; set; }
     public string Description { get; set; } = string.Empty;
+    public string? MaterialName { get; set; }
+    public string? Unit { get; set; }
+    public decimal Quantity { get; set; }
+    public decimal UnitPrice { get; set; }
     public decimal TotalAmount { get; set; }
     public int CreatedByUserId { get; set; }
     public string? Notes { get; set; }

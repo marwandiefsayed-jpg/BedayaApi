@@ -31,6 +31,16 @@ public class CreateShareholderCommandHandler : IRequestHandler<CreateShareholder
     {
         var req = request.Request;
 
+        if (!req.ProjectId.HasValue)
+        {
+            return ApiResponse<ShareholderDto>.FailureResult("يجب ربط المساهم بمشروع");
+        }
+
+        if (!await _context.Projects.AnyAsync(p => p.Id == req.ProjectId.Value, cancellationToken))
+        {
+            return ApiResponse<ShareholderDto>.FailureResult("المشروع المحدد غير موجود");
+        }
+
         if (await _context.Shareholders.AnyAsync(s => s.Code == req.Code, cancellationToken))
         {
             return ApiResponse<ShareholderDto>.FailureResult("كود المساهم مستخدم بالفعل");
@@ -103,6 +113,16 @@ public class UpdateShareholderCommandHandler : IRequestHandler<UpdateShareholder
         }
 
         var req = request.Request;
+
+        if (!req.ProjectId.HasValue)
+        {
+            return ApiResponse<ShareholderDto>.FailureResult("يجب ربط المساهم بمشروع");
+        }
+
+        if (!await _context.Projects.AnyAsync(p => p.Id == req.ProjectId.Value, cancellationToken))
+        {
+            return ApiResponse<ShareholderDto>.FailureResult("المشروع المحدد غير موجود");
+        }
 
         var oldValues = new { shareholder.Name, shareholder.NumberOfShares, shareholder.ShareId, shareholder.ProjectId };
 

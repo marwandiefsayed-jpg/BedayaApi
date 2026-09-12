@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "fzR0L4JIw1g=",
+  "dgSpecHash": "PtguexOsdDM=",
   "success": true,
   "projectFilePath": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
   "expectedPackageFiles": [
@@ -57,6 +57,7 @@
     "D:\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "D:\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "D:\\.nuget\\packages\\mono.texttemplating\\3.0.0\\mono.texttemplating.3.0.0.nupkg.sha512",
+    "D:\\.nuget\\packages\\questpdf\\2025.1.0\\questpdf.2025.1.0.nupkg.sha512",
     "D:\\.nuget\\packages\\serilog\\4.2.0\\serilog.4.2.0.nupkg.sha512",
     "D:\\.nuget\\packages\\serilog.aspnetcore\\9.0.0\\serilog.aspnetcore.9.0.0.nupkg.sha512",
     "D:\\.nuget\\packages\\serilog.extensions.hosting\\9.0.0\\serilog.extensions.hosting.9.0.0.nupkg.sha512",

@@ -105,7 +105,9 @@ public class RecordCashTransactionCommandHandler : IRequestHandler<RecordCashTra
             return ApiResponse<CashTransactionDto>.FailureResult("رقم العملية المالية مستخدم بالفعل");
         }
 
-        var storage = await _context.CashStorages.FirstOrDefaultAsync(cs => cs.Id == req.CashStorageId, cancellationToken);
+        var storage = await _context.CashStorages
+            .Include(cs => cs.CashTransactions)
+            .FirstOrDefaultAsync(cs => cs.Id == req.CashStorageId, cancellationToken);
         if (storage == null)
         {
             return ApiResponse<CashTransactionDto>.FailureResult("الخزينة المحددة غير موجودة");
@@ -223,10 +225,34 @@ public class RecordExpensePaymentCommandHandler : IRequestHandler<RecordExpenseP
             throw new NotFoundException("المصروف غير موجود");
         }
 
-        var storage = await _context.CashStorages.FirstOrDefaultAsync(cs => cs.Id == req.CashStorageId, cancellationToken);
+        var storage = await _context.CashStorages
+            .Include(cs => cs.CashTransactions)
+            .FirstOrDefaultAsync(cs => cs.Id == req.CashStorageId, cancellationToken);
         if (storage == null)
         {
             return ApiResponse<CashTransactionDto>.FailureResult("الخزينة المحددة غير موجودة");
+        }
+
+        if (!storage.IsActive)
+        {
+            return ApiResponse<CashTransactionDto>.FailureResult("الخزينة المختارة غير مفعلة");
+        }
+
+        if (storage.ProjectId.HasValue && storage.ProjectId != expense.ProjectId)
+        {
+            return ApiResponse<CashTransactionDto>.FailureResult("الخزينة المختارة لا تتبع مشروع هذا المصروف");
+        }
+
+        var storageTotalIn = storage.CashTransactions
+            .Where(t => t.Type == CashTransactionType.CashIn || t.Type == CashTransactionType.AdvanceReturned || t.Type == CashTransactionType.OwnerDeposit || t.Type == CashTransactionType.OtherIncome || t.Type == CashTransactionType.ShareholderContribution)
+            .Sum(t => t.Amount);
+        var storageTotalOut = storage.CashTransactions
+            .Where(t => t.Type == CashTransactionType.CashOut || t.Type == CashTransactionType.ExpensePayment || t.Type == CashTransactionType.AdvanceGiven || t.Type == CashTransactionType.OtherExpense)
+            .Sum(t => t.Amount);
+        var storageBalance = storage.OpeningBalance + storageTotalIn - storageTotalOut;
+        if (req.Amount > storageBalance)
+        {
+            return ApiResponse<CashTransactionDto>.FailureResult("رصيد الخزينة لا يكفي لتسجيل هذه الدفعة");
         }
 
         var currentPaid = expense.CashTransactions

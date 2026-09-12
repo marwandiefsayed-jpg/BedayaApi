@@ -20,13 +20,16 @@ public class AddShareholderPenaltyCommandHandler
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IAuditService _auditService;
 
     public AddShareholderPenaltyCommandHandler(
         IApplicationDbContext context,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IAuditService auditService)
     {
         _context = context;
         _currentUserService = currentUserService;
+        _auditService = auditService;
     }
 
     public async Task<ApiResponse<ShareholderInstallmentPenaltyDto>> Handle(
@@ -52,6 +55,12 @@ public class AddShareholderPenaltyCommandHandler
         if (installment == null)
             throw new NotFoundException("الدفعة غير موجودة");
 
+        if (!shareholder.ProjectId.HasValue || installment.ProjectId != shareholder.ProjectId.Value)
+        {
+            return ApiResponse<ShareholderInstallmentPenaltyDto>.FailureResult(
+                "لا يمكن إضافة غرامة لدفعة لا تنتمي إلى مشروع المساهم");
+        }
+
         var currentUserId = _currentUserService.UserId ?? 1;
 
         var penalty = new ShareholderInstallmentPenalty
@@ -66,6 +75,22 @@ public class AddShareholderPenaltyCommandHandler
 
         _context.ShareholderInstallmentPenalties.Add(penalty);
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _auditService.LogAsync(
+            "AddShareholderPenalty",
+            "ShareholderInstallmentPenalty",
+            penalty.Id.ToString(),
+            null,
+            new
+            {
+                penalty.ShareholderId,
+                ShareholderName = shareholder.Name,
+                penalty.ProjectInstallmentId,
+                InstallmentName = installment.Name,
+                penalty.PenaltyAmount,
+                penalty.Notes
+            },
+            cancellationToken);
 
         var user = await _context.Users.FindAsync(new object[] { currentUserId }, cancellationToken);
 
@@ -97,9 +122,13 @@ public class DeleteShareholderPenaltyCommandHandler
     : IRequestHandler<DeleteShareholderPenaltyCommand, ApiResponse<bool>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
 
-    public DeleteShareholderPenaltyCommandHandler(IApplicationDbContext context)
-        => _context = context;
+    public DeleteShareholderPenaltyCommandHandler(IApplicationDbContext context, IAuditService auditService)
+    {
+        _context = context;
+        _auditService = auditService;
+    }
 
     public async Task<ApiResponse<bool>> Handle(
         DeleteShareholderPenaltyCommand request,
@@ -113,6 +142,22 @@ public class DeleteShareholderPenaltyCommandHandler
 
         _context.ShareholderInstallmentPenalties.Remove(penalty);
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _auditService.LogAsync(
+            "DeleteShareholderPenalty",
+            "ShareholderInstallmentPenalty",
+            penalty.Id.ToString(),
+            new
+            {
+                penalty.ShareholderId,
+                penalty.ProjectInstallmentId,
+                penalty.PenaltyAmount,
+                penalty.Notes,
+                penalty.CreatedByUserId,
+                penalty.CreatedAt
+            },
+            null,
+            cancellationToken);
 
         return ApiResponse<bool>.SuccessResult(true, "تم حذف الغرامة بنجاح");
     }

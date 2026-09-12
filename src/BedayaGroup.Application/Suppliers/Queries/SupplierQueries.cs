@@ -132,6 +132,27 @@ public class GetSupplierStatementQueryHandler : IRequestHandler<GetSupplierState
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
+        // When a period is selected, carry every preceding movement into the opening
+        // balance so the report remains a real statement rather than a filtered list.
+        var openingBalance = supplier.OpeningBalance;
+        if (request.FromDate.HasValue)
+        {
+            openingBalance += expenses.Where(e => e.ExpenseDate < request.FromDate.Value).Sum(e => e.TotalAmount);
+            openingBalance -= payments.Where(p => p.TransactionDate < request.FromDate.Value).Sum(p => p.Amount);
+        }
+
+        if (request.FromDate.HasValue)
+        {
+            expenses = expenses.Where(e => e.ExpenseDate >= request.FromDate.Value).ToList();
+            payments = payments.Where(p => p.TransactionDate >= request.FromDate.Value).ToList();
+        }
+
+        if (request.ToDate.HasValue)
+        {
+            expenses = expenses.Where(e => e.ExpenseDate <= request.ToDate.Value).ToList();
+            payments = payments.Where(p => p.TransactionDate <= request.ToDate.Value).ToList();
+        }
+
         var statementItems = new List<SupplierStatementItemDto>();
 
         foreach (var exp in expenses)
@@ -145,7 +166,11 @@ public class GetSupplierStatementQueryHandler : IRequestHandler<GetSupplierState
                 0m,
                 0m,
                 exp.ProjectId,
-                exp.Project?.Name
+                exp.Project?.Name,
+                exp.MaterialName,
+                exp.Unit,
+                exp.Quantity,
+                exp.UnitPrice
             ));
         }
 
@@ -166,7 +191,7 @@ public class GetSupplierStatementQueryHandler : IRequestHandler<GetSupplierState
 
         statementItems = statementItems.OrderBy(i => i.Date).ToList();
 
-        decimal running = supplier.OpeningBalance;
+        decimal running = openingBalance;
         var calculatedItems = new List<SupplierStatementItemDto>();
 
         foreach (var item in statementItems)
@@ -175,7 +200,7 @@ public class GetSupplierStatementQueryHandler : IRequestHandler<GetSupplierState
             calculatedItems.Add(item with { RunningBalance = running });
         }
 
-        var totalInvoiced = supplier.OpeningBalance + expenses.Sum(e => e.TotalAmount);
+        var totalInvoiced = openingBalance + expenses.Sum(e => e.TotalAmount);
         var totalPaid = payments.Sum(p => p.Amount);
         var currentBalance = totalInvoiced - totalPaid;
 
@@ -184,7 +209,7 @@ public class GetSupplierStatementQueryHandler : IRequestHandler<GetSupplierState
             supplier.Code,
             supplier.Name,
             supplier.Type,
-            supplier.OpeningBalance,
+            openingBalance,
             totalInvoiced,
             totalPaid,
             currentBalance,

@@ -60,7 +60,11 @@ public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResp
                 e.CreatedByUserId,
                 e.CreatedByUser.FullName,
                 e.CreatedAt,
-                e.Notes
+                e.Notes,
+                e.MaterialName,
+                e.Unit,
+                e.Quantity,
+                e.UnitPrice
             ));
 
         var result = await PaginatedList<ExpenseDto>.CreateAsync(projectedQuery, request.PageIndex, request.PageSize, cancellationToken);
@@ -113,7 +117,11 @@ public class GetExpenseByIdQueryHandler : IRequestHandler<GetExpenseByIdQuery, A
             e.CreatedByUserId,
             e.CreatedByUser.FullName,
             e.CreatedAt,
-            e.Notes
+            e.Notes,
+            e.MaterialName,
+            e.Unit,
+            e.Quantity,
+            e.UnitPrice
         );
 
         return ApiResponse<ExpenseDto>.SuccessResult(dto);
@@ -171,7 +179,11 @@ public class GetDailyExpensesByProjectQueryHandler : IRequestHandler<GetDailyExp
                         e.CreatedByUserId,
                         e.CreatedByUser?.FullName ?? "",
                         e.CreatedAt,
-                        e.Notes
+                        e.Notes,
+                        e.MaterialName,
+                        e.Unit,
+                        e.Quantity,
+                        e.UnitPrice
                     );
                 }).ToList();
 
