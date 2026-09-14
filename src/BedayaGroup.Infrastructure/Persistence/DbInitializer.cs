@@ -18,6 +18,26 @@ public static class DbInitializer
             await context.Database.MigrateAsync();
             logger.LogInformation("Database migrations applied successfully.");
 
+            // Clean all domain data except Users to allow clean testing
+            context.ShareholderPaymentAllocations.RemoveRange(context.ShareholderPaymentAllocations);
+            context.ShareholderContributions.RemoveRange(context.ShareholderContributions);
+            context.ShareholderInstallmentPenalties.RemoveRange(context.ShareholderInstallmentPenalties);
+            context.ProjectInstallments.RemoveRange(context.ProjectInstallments);
+            context.Shares.RemoveRange(context.Shares);
+            context.Shareholders.RemoveRange(context.Shareholders);
+            context.StorageTransactions.RemoveRange(context.StorageTransactions);
+            context.Storages.RemoveRange(context.Storages);
+            context.CashTransactions.RemoveRange(context.CashTransactions);
+            context.CashStorages.RemoveRange(context.CashStorages);
+            context.Expenses.RemoveRange(context.Expenses);
+            context.Advances.RemoveRange(context.Advances);
+            context.ProjectEngineers.RemoveRange(context.ProjectEngineers);
+            context.Engineers.RemoveRange(context.Engineers);
+            context.Suppliers.RemoveRange(context.Suppliers);
+            context.Projects.RemoveRange(context.Projects);
+            context.AuditLogs.RemoveRange(context.AuditLogs);
+            await context.SaveChangesAsync();
+
             // Seed default admin user
             if (!await context.Users.AnyAsync(u => u.Username == "admin"))
             {
@@ -47,7 +67,32 @@ public static class DbInitializer
             }
 
             await context.SaveChangesAsync();
-            logger.LogInformation("Static accounts verified and seeded successfully.");
+
+            // Seed exact 2 cash storages: خزينة المكتب & خزينة بنكية
+            if (!await context.CashStorages.AnyAsync())
+            {
+                context.CashStorages.AddRange(
+                    new CashStorage
+                    {
+                        Name = "خزينة المكتب",
+                        Type = BedayaGroup.Domain.Enums.CashStorageType.Company,
+                        OpeningBalance = 0,
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow
+                    },
+                    new CashStorage
+                    {
+                        Name = "خزينة بنكية",
+                        Type = BedayaGroup.Domain.Enums.CashStorageType.Calculator,
+                        OpeningBalance = 0,
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow
+                    }
+                );
+                await context.SaveChangesAsync();
+            }
+
+            logger.LogInformation("Static accounts and cash storages verified and seeded successfully.");
         }
         catch (Exception ex)
         {

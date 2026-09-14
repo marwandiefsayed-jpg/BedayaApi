@@ -56,7 +56,8 @@ public record SupplierStatementItemDto(
     string? MaterialName = null,
     string? Unit = null,
     decimal Quantity = 0m,
-    decimal UnitPrice = 0m
+    decimal UnitPrice = 0m,
+    int? ExpenseId = null
 );
 
 public record SupplierStatementDto(

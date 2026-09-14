@@ -19,7 +19,7 @@ public class ReportsController : ApiControllerBase
     public async Task<IActionResult> ExportReceiptsDistributionPdf([FromBody] ExportReceiptsDistributionPdfRequest request)
     {
         var result = await Mediator.Send(new ExportReceiptsDistributionPdfQuery(request));
-        if (!result.Success || result.Data == null)
+        if (!result.Success || result.Data == null) 
         {
             return BadRequest(result);
         }

@@ -170,22 +170,39 @@ public class GetSupplierStatementQueryHandler : IRequestHandler<GetSupplierState
                 exp.MaterialName,
                 exp.Unit,
                 exp.Quantity,
-                exp.UnitPrice
+                exp.UnitPrice,
+                exp.Id
             ));
         }
 
         foreach (var pay in payments)
         {
+            var parentExp = pay.ExpenseId.HasValue ? expenses.FirstOrDefault(e => e.Id == pay.ExpenseId.Value) : null;
+            var matName = parentExp?.MaterialName ?? parentExp?.Description;
+
+            var cleanDesc = System.Text.RegularExpressions.Regex.Replace(pay.Description ?? "", @"سداد لمصروف رقم:\s*EXP-[A-Z0-9-]+\s*-\s*", "سداد دفعة للمادة: ");
+            cleanDesc = System.Text.RegularExpressions.Regex.Replace(cleanDesc, @"سداد لمصروف رقم:\s*EXP-[A-Z0-9-]+", "سداد دفعة");
+
+            if (string.IsNullOrWhiteSpace(cleanDesc) || cleanDesc == "سداد دفعة")
+            {
+                cleanDesc = !string.IsNullOrWhiteSpace(matName) ? $"سداد دفعة ({matName})" : "سداد دفعة";
+            }
+
             statementItems.Add(new SupplierStatementItemDto(
                 pay.TransactionDate,
                 "سداد نقدي",
                 pay.TransactionNumber,
-                pay.Description,
+                cleanDesc,
                 0m,
                 pay.Amount,
                 0m,
                 pay.ProjectId,
-                pay.Project?.Name
+                pay.Project?.Name,
+                null,
+                null,
+                0m,
+                0m,
+                pay.ExpenseId
             ));
         }
 

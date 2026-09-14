@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj": {}
+    "e:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj": {}
   },
   "projects": {
-    "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj": {
+    "e:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
+        "projectUniqueName": "e:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
         "projectName": "BedayaGroup.API",
-        "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
+        "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
         "packagesPath": "D:\\.nuget\\packages",
-        "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.API\\obj\\",
+        "outputPath": "e:\\BedayaApi\\src\\BedayaGroup.API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,11 +32,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
-                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj"
+              "e:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
+                "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj"
               },
-              "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj": {
-                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj"
+              "e:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj": {
+                "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj"
               }
             }
           }
@@ -95,14 +95,14 @@
         }
       }
     },
-    "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
+    "e:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
+        "projectUniqueName": "e:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
         "projectName": "BedayaGroup.Application",
-        "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
+        "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
         "packagesPath": "D:\\.nuget\\packages",
-        "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\obj\\",
+        "outputPath": "e:\\BedayaApi\\src\\BedayaGroup.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -123,8 +123,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
-                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
+              "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
+                "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
               }
             }
           }
@@ -178,14 +178,14 @@
         }
       }
     },
-    "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
+    "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
+        "projectUniqueName": "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
         "projectName": "BedayaGroup.Domain",
-        "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
+        "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
         "packagesPath": "D:\\.nuget\\packages",
-        "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\obj\\",
+        "outputPath": "e:\\BedayaApi\\src\\BedayaGroup.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -243,14 +243,14 @@
         }
       }
     },
-    "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj": {
+    "e:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj",
+        "projectUniqueName": "e:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj",
         "projectName": "BedayaGroup.Infrastructure",
-        "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj",
+        "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\BedayaGroup.Infrastructure.csproj",
         "packagesPath": "D:\\.nuget\\packages",
-        "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\obj\\",
+        "outputPath": "e:\\BedayaApi\\src\\BedayaGroup.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -271,11 +271,11 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
-                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj"
+              "e:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj": {
+                "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj"
               },
-              "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
-                "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
+              "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
+                "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
               }
             }
           }

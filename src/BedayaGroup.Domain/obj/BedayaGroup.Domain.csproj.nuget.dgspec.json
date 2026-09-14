@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {}
+    "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {}
   },
   "projects": {
-    "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
+    "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
+        "projectUniqueName": "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
         "projectName": "BedayaGroup.Domain",
-        "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
+        "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj",
         "packagesPath": "D:\\.nuget\\packages",
-        "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\obj\\",
+        "outputPath": "e:\\BedayaApi\\src\\BedayaGroup.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

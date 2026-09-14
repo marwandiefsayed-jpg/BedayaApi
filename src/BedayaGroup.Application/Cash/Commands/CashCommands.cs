@@ -282,7 +282,7 @@ public class RecordExpensePaymentCommandHandler : IRequestHandler<RecordExpenseP
                 CashStorageId = req.CashStorageId,
                 ProjectId = expense.ProjectId,
                 ExpenseId = expense.Id,
-                Description = $"سداد لمصروف رقم: {expense.ExpenseNumber} - {expense.Description}",
+                Description = $"سداد دفعة للمادة: {expense.MaterialName ?? expense.Description}",
                 ReferenceNumber = req.ReferenceNumber,
                 CreatedByUserId = currentUserId,
                 Notes = req.Notes,

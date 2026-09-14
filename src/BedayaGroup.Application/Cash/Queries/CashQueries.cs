@@ -20,6 +20,29 @@ public class GetCashStoragesQueryHandler : IRequestHandler<GetCashStoragesQuery,
 
     public async Task<ApiResponse<List<CashStorageDto>>> Handle(GetCashStoragesQuery request, CancellationToken cancellationToken)
     {
+        if (!await _context.CashStorages.AnyAsync(cancellationToken))
+        {
+            _context.CashStorages.AddRange(
+                new Domain.Entities.CashStorage
+                {
+                    Name = "خزينة المكتب",
+                    Type = CashStorageType.Company,
+                    OpeningBalance = 0,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                },
+                new Domain.Entities.CashStorage
+                {
+                    Name = "خزينة بنكية",
+                    Type = CashStorageType.Calculator,
+                    OpeningBalance = 0,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                }
+            );
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
         var query = _context.CashStorages
             .Include(cs => cs.Project)
             .Include(cs => cs.CashTransactions)
@@ -28,7 +51,7 @@ public class GetCashStoragesQueryHandler : IRequestHandler<GetCashStoragesQuery,
 
         if (request.ProjectId.HasValue)
         {
-            query = query.Where(cs => cs.ProjectId == request.ProjectId.Value || cs.Type == CashStorageType.Company);
+            query = query.Where(cs => cs.ProjectId == request.ProjectId.Value || cs.Type == CashStorageType.Company || cs.Type == CashStorageType.Calculator);
         }
 
         var storages = await query.ToListAsync(cancellationToken);
