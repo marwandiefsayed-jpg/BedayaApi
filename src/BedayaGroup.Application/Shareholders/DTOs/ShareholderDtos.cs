@@ -31,6 +31,17 @@ public record CreateProjectInstallmentRequest(
     decimal AmountPerShare
 );
 
+public record CreateManualInstallmentForShareholdersRequest
+{
+    public int ProjectId { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public DateTime StartDate { get; init; }
+    public DateTime EndDate { get; init; }
+    public decimal DirectAmount { get; init; }
+    public List<int> ShareholderIds { get; init; } = new();
+    public string? Notes { get; init; }
+}
+
 public record UpdateProjectInstallmentRequest(
     string Name,
     DateTime StartDate,
@@ -75,7 +86,6 @@ public record RecordShareholderContributionRequest(
     int ShareholderId,
     int ProjectId,
     int ProjectInstallmentId,
-    int? CashStorageId,
     decimal Amount,
     DateTime ContributionDate,
     string? Description,
@@ -101,7 +111,10 @@ public record ShareholderDto(
     string? ProjectName,
     string? Notes,
     bool IsActive,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    decimal TotalExpected = 0,
+    decimal TotalPaid = 0,
+    decimal TotalRemaining = 0
 );
 
 // ============== Installment Status DTOs ==============

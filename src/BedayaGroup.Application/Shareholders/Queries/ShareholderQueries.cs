@@ -38,8 +38,42 @@ public class GetShareholdersQueryHandler : IRequestHandler<GetShareholdersQuery,
             query = query.Where(s => s.Name.Contains(request.Search) || s.Code.Contains(request.Search) || (s.Phone != null && s.Phone.Contains(request.Search)));
         }
 
-        var projectedQuery = query.OrderByDescending(s => s.CreatedAt)
-            .Select(s => new ShareholderDto(
+        var totalCount = await query.CountAsync(cancellationToken);
+        var items = await query.OrderByDescending(s => s.CreatedAt)
+            .Skip((request.PageIndex - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToListAsync(cancellationToken);
+
+        var shareholderIds = items.Select(s => s.Id).ToList();
+        var projectIds = items.Where(s => s.ProjectId.HasValue).Select(s => s.ProjectId!.Value).Distinct().ToList();
+
+        var installments = await _context.ProjectInstallments
+            .Include(pi => pi.TargetShareholders)
+            .Where(pi => projectIds.Contains(pi.ProjectId))
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        var penalties = await _context.ShareholderInstallmentPenalties
+            .Where(p => shareholderIds.Contains(p.ShareholderId))
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        var contributions = await _context.ShareholderContributions
+            .Where(c => shareholderIds.Contains(c.ShareholderId))
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        var dtos = items.Select(s =>
+        {
+            var sInstallments = installments.Where(pi => pi.ProjectId == s.ProjectId &&
+                (!pi.TargetShareholders.Any() || pi.TargetShareholders.Any(target => target.ShareholderId == s.Id))).ToList();
+            var sPenaltiesSum = penalties.Where(p => p.ShareholderId == s.Id).Sum(p => p.PenaltyAmount);
+            var baseExpected = sInstallments.Sum(pi => pi.AmountPerShare * s.NumberOfShares);
+            var expected = baseExpected + sPenaltiesSum;
+            var paid = contributions.Where(c => c.ShareholderId == s.Id).Sum(c => c.Amount);
+            var remaining = Math.Max(0m, expected - paid);
+
+            return new ShareholderDto(
                 s.Id,
                 s.Code,
                 s.Name,
@@ -49,11 +83,15 @@ public class GetShareholdersQueryHandler : IRequestHandler<GetShareholdersQuery,
                 s.Project != null ? s.Project.Name : null,
                 s.Notes,
                 s.IsActive,
-                s.CreatedAt
-            ));
+                s.CreatedAt,
+                expected,
+                paid,
+                remaining
+            );
+        }).ToList();
 
-        var result = await PaginatedList<ShareholderDto>.CreateAsync(projectedQuery, request.PageIndex, request.PageSize, cancellationToken);
-        return ApiResponse<PaginatedList<ShareholderDto>>.SuccessResult(result);
+        var paginatedResult = new PaginatedList<ShareholderDto>(dtos, totalCount, request.PageIndex, request.PageSize);
+        return ApiResponse<PaginatedList<ShareholderDto>>.SuccessResult(paginatedResult);
     }
 }
 
@@ -110,7 +148,8 @@ public class GetShareholderStatementQueryHandler : IRequestHandler<GetShareholde
         var installments = shareholder.ProjectId.HasValue
             ? await _context.ProjectInstallments
                 .Include(i => i.Project)
-                .Where(i => i.ProjectId == shareholder.ProjectId.Value && i.IsActive)
+                .Where(i => i.ProjectId == shareholder.ProjectId.Value && i.IsActive &&
+                    (!i.TargetShareholders.Any() || i.TargetShareholders.Any(target => target.ShareholderId == shareholder.Id)))
                 .OrderBy(i => i.EndDate)
                 .ThenBy(i => i.Id)
                 .AsNoTracking()

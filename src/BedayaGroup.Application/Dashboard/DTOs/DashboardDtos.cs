@@ -4,10 +4,8 @@ public record DashboardSummaryDto(
     int TotalProjects,
     int ActiveProjects,
     decimal TotalExpenses,
-    decimal TotalSupplierOutstanding,
     decimal TotalCashBalance,
     decimal TotalShareholderOutstanding,
-    decimal TotalOutstandingAdvances,
     List<MonthlyCashFlowDto> MonthlyCashFlow
 );
 

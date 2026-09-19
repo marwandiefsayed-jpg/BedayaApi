@@ -20,7 +20,7 @@ public class GetCashStoragesQueryHandler : IRequestHandler<GetCashStoragesQuery,
 
     public async Task<ApiResponse<List<CashStorageDto>>> Handle(GetCashStoragesQuery request, CancellationToken cancellationToken)
     {
-        if (!await _context.CashStorages.AnyAsync(cancellationToken))
+        if (!await _context.CashStorages.AnyAsync(cs => cs.Type != CashStorageType.Project, cancellationToken))
         {
             _context.CashStorages.AddRange(
                 new Domain.Entities.CashStorage
@@ -51,7 +51,12 @@ public class GetCashStoragesQueryHandler : IRequestHandler<GetCashStoragesQuery,
 
         if (request.ProjectId.HasValue)
         {
-            query = query.Where(cs => cs.ProjectId == request.ProjectId.Value || cs.Type == CashStorageType.Company || cs.Type == CashStorageType.Calculator);
+            query = query.Where(cs => cs.Type == CashStorageType.Project && cs.ProjectId == request.ProjectId.Value);
+        }
+        else
+        {
+            // Manual company storages only; project storages are fetched per project.
+            query = query.Where(cs => cs.Type != CashStorageType.Project);
         }
 
         var storages = await query.ToListAsync(cancellationToken);
@@ -60,11 +65,11 @@ public class GetCashStoragesQueryHandler : IRequestHandler<GetCashStoragesQuery,
         foreach (var cs in storages)
         {
             var totalIn = cs.CashTransactions
-                .Where(t => t.Type == CashTransactionType.CashIn || t.Type == CashTransactionType.AdvanceReturned || t.Type == CashTransactionType.OwnerDeposit || t.Type == CashTransactionType.OtherIncome || t.Type == CashTransactionType.ShareholderContribution)
+                .Where(t => t.Type == CashTransactionType.CashIn || t.Type == CashTransactionType.OwnerDeposit || t.Type == CashTransactionType.OtherIncome || t.Type == CashTransactionType.ShareholderContribution)
                 .Sum(t => t.Amount);
 
             var totalOut = cs.CashTransactions
-                .Where(t => t.Type == CashTransactionType.CashOut || t.Type == CashTransactionType.ExpensePayment || t.Type == CashTransactionType.AdvanceGiven || t.Type == CashTransactionType.OtherExpense)
+                .Where(t => t.Type == CashTransactionType.CashOut || t.Type == CashTransactionType.ExpensePayment || t.Type == CashTransactionType.OtherExpense)
                 .Sum(t => t.Amount);
 
             var currentBalance = cs.OpeningBalance + totalIn - totalOut;
@@ -112,13 +117,21 @@ public class GetCashTransactionsQueryHandler : IRequestHandler<GetCashTransactio
             .Include(ct => ct.CashStorage)
             .Include(ct => ct.Project)
             .Include(ct => ct.Expense)
-            .Include(ct => ct.Advance)
             .Include(ct => ct.CreatedByUser)
             .AsNoTracking()
             .AsQueryable();
 
         if (request.CashStorageId.HasValue) query = query.Where(ct => ct.CashStorageId == request.CashStorageId.Value);
-        if (request.ProjectId.HasValue) query = query.Where(ct => ct.ProjectId == request.ProjectId.Value);
+        if (request.ProjectId.HasValue)
+        {
+            // A project's storage activity belongs exclusively to that project's vault.
+            query = query.Where(ct => ct.ProjectId == request.ProjectId.Value && ct.CashStorage.Type == CashStorageType.Project);
+        }
+        else
+        {
+            // The company cash page must never expose project-vault activity, even when a storage id is supplied.
+            query = query.Where(ct => ct.CashStorage.Type != CashStorageType.Project);
+        }
         if (request.Type.HasValue) query = query.Where(ct => ct.Type == request.Type.Value);
         if (request.FromDate.HasValue) query = query.Where(ct => ct.TransactionDate >= request.FromDate.Value);
         if (request.ToDate.HasValue) query = query.Where(ct => ct.TransactionDate <= request.ToDate.Value);
@@ -137,9 +150,14 @@ public class GetCashTransactionsQueryHandler : IRequestHandler<GetCashTransactio
                 ct.Project != null ? ct.Project.Name : null,
                 ct.ExpenseId,
                 ct.Expense != null ? ct.Expense.ExpenseNumber : null,
-                ct.AdvanceId,
-                ct.Advance != null ? ct.Advance.AdvanceNumber : null,
-                ct.Description,
+                ct.Type == CashTransactionType.ShareholderContribution
+                    ? "مساهمة من الساهم: " + _context.ShareholderContributions
+                        .Where(c => c.TransactionId == ct.Id)
+                        .Select(c => c.Shareholder.Name)
+                        .FirstOrDefault()
+                    : ct.Expense != null
+                        ? "سداد مصروف: " + (ct.Expense.MaterialName ?? ct.Expense.Description)
+                        : ct.Description,
                 ct.ReferenceNumber,
                 ct.CreatedByUserId,
                 ct.CreatedByUser.FullName,
@@ -156,8 +174,6 @@ public class GetCashTransactionsQueryHandler : IRequestHandler<GetCashTransactio
         CashTransactionType.ExpensePayment => "سداد مصروف",
         CashTransactionType.CashIn => "إيراد نقدي",
         CashTransactionType.CashOut => "مصروف نقدي",
-        CashTransactionType.AdvanceGiven => "صرف عهدة",
-        CashTransactionType.AdvanceReturned => "رد عهدة",
         CashTransactionType.OwnerDeposit => "إيداع مالك الشركة",
         CashTransactionType.OtherIncome => "إيراد آخر",
         CashTransactionType.OtherExpense => "مصروف آخر",

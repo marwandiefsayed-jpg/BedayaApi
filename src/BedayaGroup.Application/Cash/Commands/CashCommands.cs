@@ -127,7 +127,6 @@ public class RecordCashTransactionCommandHandler : IRequestHandler<RecordCashTra
                 CashStorageId = req.CashStorageId,
                 ProjectId = req.ProjectId,
                 ExpenseId = req.ExpenseId,
-                AdvanceId = req.AdvanceId,
                 Description = req.Description,
                 ReferenceNumber = req.ReferenceNumber,
                 CreatedByUserId = currentUserId,
@@ -158,8 +157,6 @@ public class RecordCashTransactionCommandHandler : IRequestHandler<RecordCashTra
                 project?.Name,
                 transaction.ExpenseId,
                 null,
-                transaction.AdvanceId,
-                null,
                 transaction.Description,
                 transaction.ReferenceNumber,
                 transaction.CreatedByUserId,
@@ -182,14 +179,56 @@ public class RecordCashTransactionCommandHandler : IRequestHandler<RecordCashTra
         CashTransactionType.ExpensePayment => "سداد مصروف",
         CashTransactionType.CashIn => "إيراد نقدي",
         CashTransactionType.CashOut => "مصروف نقدي",
-        CashTransactionType.AdvanceGiven => "صرف عهدة",
-        CashTransactionType.AdvanceReturned => "رد عهدة",
         CashTransactionType.OwnerDeposit => "إيداع مالك الشركة",
         CashTransactionType.OtherIncome => "إيراد آخر",
         CashTransactionType.OtherExpense => "مصروف آخر",
         CashTransactionType.ShareholderContribution => "مساهمة مساهم",
         _ => type.ToString()
     };
+}
+
+public record DeleteCompanyCashTransactionCommand(int TransactionId) : IRequest<ApiResponse<bool>>;
+
+public class DeleteCompanyCashTransactionCommandHandler : IRequestHandler<DeleteCompanyCashTransactionCommand, ApiResponse<bool>>
+{
+    private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
+
+    public DeleteCompanyCashTransactionCommandHandler(IApplicationDbContext context, IAuditService auditService)
+    {
+        _context = context;
+        _auditService = auditService;
+    }
+
+    public async Task<ApiResponse<bool>> Handle(DeleteCompanyCashTransactionCommand request, CancellationToken cancellationToken)
+    {
+        var transaction = await _context.CashTransactions
+            .Include(ct => ct.CashStorage)
+            .FirstOrDefaultAsync(ct => ct.Id == request.TransactionId, cancellationToken);
+
+        if (transaction == null)
+            return ApiResponse<bool>.FailureResult("العملية المالية غير موجودة");
+
+        if (transaction.CashStorage.Type == CashStorageType.Project)
+            return ApiResponse<bool>.FailureResult("لا يمكن حذف عمليات خزينة المشروع من خزائن الشركة");
+
+        // Preserve contribution records if legacy data links one to this company transaction.
+        var linkedContributions = await _context.ShareholderContributions
+            .Where(sc => sc.TransactionId == transaction.Id)
+            .ToListAsync(cancellationToken);
+        foreach (var contribution in linkedContributions) contribution.TransactionId = null;
+
+        _context.CashTransactions.Remove(transaction);
+        await _context.SaveChangesAsync(cancellationToken);
+        await _auditService.LogAsync("Delete", "CashTransaction", transaction.Id.ToString(), new
+        {
+            transaction.TransactionNumber,
+            transaction.Amount,
+            CashStorage = transaction.CashStorage.Name
+        }, null, cancellationToken);
+
+        return ApiResponse<bool>.SuccessResult(true, "تم حذف العملية المالية بنجاح");
+    }
 }
 
 public record RecordExpensePaymentCommand(RecordExpensePaymentRequest Request) : IRequest<ApiResponse<CashTransactionDto>>;
@@ -244,10 +283,10 @@ public class RecordExpensePaymentCommandHandler : IRequestHandler<RecordExpenseP
         }
 
         var storageTotalIn = storage.CashTransactions
-            .Where(t => t.Type == CashTransactionType.CashIn || t.Type == CashTransactionType.AdvanceReturned || t.Type == CashTransactionType.OwnerDeposit || t.Type == CashTransactionType.OtherIncome || t.Type == CashTransactionType.ShareholderContribution)
+            .Where(t => t.Type == CashTransactionType.CashIn || t.Type == CashTransactionType.OwnerDeposit || t.Type == CashTransactionType.OtherIncome || t.Type == CashTransactionType.ShareholderContribution)
             .Sum(t => t.Amount);
         var storageTotalOut = storage.CashTransactions
-            .Where(t => t.Type == CashTransactionType.CashOut || t.Type == CashTransactionType.ExpensePayment || t.Type == CashTransactionType.AdvanceGiven || t.Type == CashTransactionType.OtherExpense)
+            .Where(t => t.Type == CashTransactionType.CashOut || t.Type == CashTransactionType.ExpensePayment || t.Type == CashTransactionType.OtherExpense)
             .Sum(t => t.Amount);
         var storageBalance = storage.OpeningBalance + storageTotalIn - storageTotalOut;
         if (req.Amount > storageBalance)
@@ -326,8 +365,6 @@ public class RecordExpensePaymentCommandHandler : IRequestHandler<RecordExpenseP
                 project?.Name,
                 cashTx.ExpenseId,
                 expense.ExpenseNumber,
-                null,
-                null,
                 cashTx.Description,
                 cashTx.ReferenceNumber,
                 cashTx.CreatedByUserId,
@@ -337,6 +374,70 @@ public class RecordExpensePaymentCommandHandler : IRequestHandler<RecordExpenseP
             );
 
             return ApiResponse<CashTransactionDto>.SuccessResult(dto, "تم تسجيل سداد المصروف بنجاح");
+        }
+        catch
+        {
+            await dbTransaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+}
+
+public record DeleteExpensePaymentCommand(int TransactionId) : IRequest<ApiResponse<bool>>;
+
+public class DeleteExpensePaymentCommandHandler : IRequestHandler<DeleteExpensePaymentCommand, ApiResponse<bool>>
+{
+    private readonly IApplicationDbContext _context;
+    private readonly IAuditService _auditService;
+
+    public DeleteExpensePaymentCommandHandler(IApplicationDbContext context, IAuditService auditService)
+    {
+        _context = context;
+        _auditService = auditService;
+    }
+
+    public async Task<ApiResponse<bool>> Handle(DeleteExpensePaymentCommand request, CancellationToken cancellationToken)
+    {
+        var cashTx = await _context.CashTransactions
+            .FirstOrDefaultAsync(t => t.Id == request.TransactionId && t.Type == CashTransactionType.ExpensePayment, cancellationToken);
+
+        if (cashTx == null)
+        {
+            throw new NotFoundException("عملية الدفع غير موجودة");
+        }
+
+        using var dbTransaction = await _context.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            var expenseId = cashTx.ExpenseId;
+            _context.CashTransactions.Remove(cashTx);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            if (expenseId.HasValue)
+            {
+                var expense = await _context.Expenses
+                    .Include(e => e.CashTransactions)
+                    .FirstOrDefaultAsync(e => e.Id == expenseId.Value, cancellationToken);
+
+                if (expense != null)
+                {
+                    var remainingPaid = expense.CashTransactions
+                        .Where(t => t.Type == CashTransactionType.ExpensePayment && t.Id != cashTx.Id)
+                        .Sum(t => t.Amount);
+
+                    if (remainingPaid == 0) expense.Status = ExpenseStatus.Due;
+                    else if (remainingPaid >= expense.TotalAmount) expense.Status = ExpenseStatus.Paid;
+                    else expense.Status = ExpenseStatus.PartiallyPaid;
+
+                    expense.UpdatedAt = DateTime.UtcNow;
+                    await _context.SaveChangesAsync(cancellationToken);
+                }
+            }
+
+            await dbTransaction.CommitAsync(cancellationToken);
+            await _auditService.LogAsync("DeleteExpensePayment", "CashTransaction", cashTx.Id.ToString(), new { cashTx.Amount, cashTx.ExpenseId }, null, cancellationToken);
+
+            return ApiResponse<bool>.SuccessResult(true, "تم إلغاء/خصم المبلغ وتحديث رصيد الخزينة وحالة المصروف بنجاح");
         }
         catch
         {

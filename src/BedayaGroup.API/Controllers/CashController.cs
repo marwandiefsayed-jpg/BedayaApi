@@ -51,11 +51,29 @@ public class CashController : ApiControllerBase
         return Ok(result);
     }
 
+    [HttpDelete("transactions/{transactionId}")]
+    [Authorize(Policy = "FinancialWriteAccess")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteCompanyCashTransaction(int transactionId)
+    {
+        var result = await Mediator.Send(new DeleteCompanyCashTransactionCommand(transactionId));
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
+    }
+
     [HttpPost("payments/expense")]
     [Authorize(Policy = "FinancialWriteAccess")]
     public async Task<ActionResult<ApiResponse<CashTransactionDto>>> RecordExpensePayment([FromBody] RecordExpensePaymentRequest request)
     {
         var result = await Mediator.Send(new RecordExpensePaymentCommand(request));
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
+    }
+
+    [HttpDelete("payments/expense/{transactionId}")]
+    [Authorize(Policy = "FinancialWriteAccess")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteExpensePayment(int transactionId)
+    {
+        var result = await Mediator.Send(new DeleteExpensePaymentCommand(transactionId));
         if (!result.Success) return BadRequest(result);
         return Ok(result);
     }

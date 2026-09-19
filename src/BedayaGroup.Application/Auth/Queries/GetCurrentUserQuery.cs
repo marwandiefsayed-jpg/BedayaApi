@@ -39,6 +39,8 @@ public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, A
             user.Id,
             user.FullName,
             user.Username,
+            user.Role,
+            GetRoleName(user.Role),
             user.Phone,
             user.IsActive,
             user.CreatedAt,
@@ -47,4 +49,12 @@ public class GetCurrentUserQueryHandler : IRequestHandler<GetCurrentUserQuery, A
 
         return ApiResponse<UserDto>.SuccessResult(dto);
     }
+
+    private static string GetRoleName(BedayaGroup.Domain.Enums.UserRole role) => role switch
+    {
+        BedayaGroup.Domain.Enums.UserRole.CompanyOwner => "مالك الشركة",
+        BedayaGroup.Domain.Enums.UserRole.ShareholdersOfficer => "مسؤول المساهمين",
+        BedayaGroup.Domain.Enums.UserRole.ExpensesOfficer => "مسؤول المصروفات والموردين",
+        _ => "مستخدم"
+    };
 }

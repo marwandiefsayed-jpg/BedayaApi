@@ -70,4 +70,25 @@ public class ProjectInstallmentsController : ApiControllerBase
         if (!result.Success) return BadRequest(result);
         return Ok(result);
     }
+
+    [HttpPost("manual")]
+    [Authorize(Policy = "FinancialWriteAccess")]
+    public async Task<ActionResult<ApiResponse<ProjectInstallmentDto>>> CreateManualInstallment(int projectId, [FromBody] CreateManualInstallmentForShareholdersRequest request)
+    {
+        if (projectId != request.ProjectId) return BadRequest(ApiResponse.FailureResult("معرف المشروع غير متطابق"));
+        var result = await Mediator.Send(new CreateManualInstallmentForShareholdersCommand(request));
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
+    }
+
+    [HttpDelete("{installmentId}")]
+    [Authorize(Policy = "CompanyOwnerOnly")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteInstallment(int projectId, int installmentId)
+
+    {
+        var result = await Mediator.Send(new DeleteProjectInstallmentCommand(installmentId));
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
+    }
 }
+

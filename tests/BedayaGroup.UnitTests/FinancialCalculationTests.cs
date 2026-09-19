@@ -60,28 +60,4 @@ public class FinancialCalculationTests
         totalContributed.Should().Be(300000m);
         remaining.Should().Be(200000m);
     }
-
-    [Fact]
-    public void AdvanceRemaining_ShouldCalculateCorrectly()
-    {
-        // Arrange
-        var advance = new Advance
-        {
-            IssuedAmount = 50000m,
-            AdvanceNumber = "ADV-01"
-        };
-
-        var settlements = new List<CashTransaction>
-        {
-            new CashTransaction { Amount = 15000m, Type = CashTransactionType.AdvanceReturned }
-        };
-
-        // Act
-        var totalSettled = settlements.Where(ct => ct.Type == CashTransactionType.AdvanceReturned).Sum(ct => ct.Amount);
-        var remaining = advance.IssuedAmount - totalSettled;
-
-        // Assert
-        totalSettled.Should().Be(15000m);
-        remaining.Should().Be(35000m);
-    }
 }

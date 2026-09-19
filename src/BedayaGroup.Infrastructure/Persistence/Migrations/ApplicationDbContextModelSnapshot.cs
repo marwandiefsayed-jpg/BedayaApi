@@ -22,70 +22,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.Advance", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AdvanceNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CreatedByUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EngineerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("IssueDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("IssuedAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.Property<DateTime?>("SettlementDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AdvanceNumber")
-                        .IsUnique();
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("EngineerId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("Status");
-
-                    b.ToTable("Advances");
-                });
-
             modelBuilder.Entity("BedayaGroup.Domain.Entities.AuditLog", b =>
                 {
                     b.Property<long>("Id")
@@ -188,9 +124,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AdvanceId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
@@ -240,8 +173,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AdvanceId");
-
                     b.HasIndex("CashStorageId");
 
                     b.HasIndex("CreatedByUserId");
@@ -256,56 +187,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("CashTransactions");
-                });
-
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.Engineer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Specialization")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("Engineers");
                 });
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.Expense", b =>
@@ -355,7 +236,7 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("SupplierId")
+                    b.Property<int?>("StorageId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
@@ -382,7 +263,7 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("SupplierId");
+                    b.HasIndex("StorageId");
 
                     b.ToTable("Expenses");
                 });
@@ -420,50 +301,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Projects");
-                });
-
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.ProjectEngineer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EngineerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EngineerId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectEngineers");
                 });
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.ProjectInstallment", b =>
@@ -508,6 +345,38 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("ProjectInstallments");
+                });
+
+            modelBuilder.Entity("BedayaGroup.Domain.Entities.ProjectInstallmentShareholder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProjectInstallmentId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("ShareholderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectInstallmentId");
+
+                    b.HasIndex("ShareholderId");
+
+                    b.ToTable("ProjectInstallmentShareholders");
                 });
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.Share", b =>
@@ -839,66 +708,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                     b.ToTable("StorageTransactions");
                 });
 
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.Supplier", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("OpeningBalance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<byte[]>("RowVersion")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.HasIndex("Name");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("Suppliers");
-                });
-
             modelBuilder.Entity("BedayaGroup.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -929,6 +738,9 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
@@ -948,33 +760,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.Advance", b =>
-                {
-                    b.HasOne("BedayaGroup.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BedayaGroup.Domain.Entities.Engineer", "Engineer")
-                        .WithMany("Advances")
-                        .HasForeignKey("EngineerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("BedayaGroup.Domain.Entities.Project", "Project")
-                        .WithMany("Advances")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("Engineer");
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.AuditLog", b =>
@@ -999,11 +784,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.CashTransaction", b =>
                 {
-                    b.HasOne("BedayaGroup.Domain.Entities.Advance", "Advance")
-                        .WithMany("CashTransactions")
-                        .HasForeignKey("AdvanceId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("BedayaGroup.Domain.Entities.CashStorage", "CashStorage")
                         .WithMany("CashTransactions")
                         .HasForeignKey("CashStorageId")
@@ -1025,8 +805,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                         .WithMany("CashTransactions")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Advance");
 
                     b.Navigation("CashStorage");
 
@@ -1051,36 +829,16 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("BedayaGroup.Domain.Entities.Supplier", "Supplier")
-                        .WithMany("Expenses")
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.HasOne("BedayaGroup.Domain.Entities.Storage", "Storage")
+                        .WithMany()
+                        .HasForeignKey("StorageId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("Project");
 
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.ProjectEngineer", b =>
-                {
-                    b.HasOne("BedayaGroup.Domain.Entities.Engineer", "Engineer")
-                        .WithMany("ProjectEngineers")
-                        .HasForeignKey("EngineerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BedayaGroup.Domain.Entities.Project", "Project")
-                        .WithMany("ProjectEngineers")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Engineer");
-
-                    b.Navigation("Project");
+                    b.Navigation("Storage");
                 });
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.ProjectInstallment", b =>
@@ -1092,6 +850,25 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("BedayaGroup.Domain.Entities.ProjectInstallmentShareholder", b =>
+                {
+                    b.HasOne("BedayaGroup.Domain.Entities.ProjectInstallment", "ProjectInstallment")
+                        .WithMany("TargetShareholders")
+                        .HasForeignKey("ProjectInstallmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BedayaGroup.Domain.Entities.Shareholder", "Shareholder")
+                        .WithMany()
+                        .HasForeignKey("ShareholderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectInstallment");
+
+                    b.Navigation("Shareholder");
                 });
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.Shareholder", b =>
@@ -1226,31 +1003,9 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
                     b.Navigation("Storage");
                 });
 
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.Supplier", b =>
-                {
-                    b.HasOne("BedayaGroup.Domain.Entities.Project", "Project")
-                        .WithMany("Suppliers")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.Advance", b =>
-                {
-                    b.Navigation("CashTransactions");
-                });
-
             modelBuilder.Entity("BedayaGroup.Domain.Entities.CashStorage", b =>
                 {
                     b.Navigation("CashTransactions");
-                });
-
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.Engineer", b =>
-                {
-                    b.Navigation("Advances");
-
-                    b.Navigation("ProjectEngineers");
                 });
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.Expense", b =>
@@ -1260,19 +1015,18 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.Project", b =>
                 {
-                    b.Navigation("Advances");
-
                     b.Navigation("CashTransactions");
 
                     b.Navigation("Expenses");
 
-                    b.Navigation("ProjectEngineers");
-
                     b.Navigation("Shareholders");
 
                     b.Navigation("Storages");
+                });
 
-                    b.Navigation("Suppliers");
+            modelBuilder.Entity("BedayaGroup.Domain.Entities.ProjectInstallment", b =>
+                {
+                    b.Navigation("TargetShareholders");
                 });
 
             modelBuilder.Entity("BedayaGroup.Domain.Entities.Share", b =>
@@ -1288,11 +1042,6 @@ namespace BedayaGroup.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("BedayaGroup.Domain.Entities.Storage", b =>
                 {
                     b.Navigation("StorageTransactions");
-                });
-
-            modelBuilder.Entity("BedayaGroup.Domain.Entities.Supplier", b =>
-                {
-                    b.Navigation("Expenses");
                 });
 #pragma warning restore 612, 618
         }

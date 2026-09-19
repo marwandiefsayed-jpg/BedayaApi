@@ -1,7 +1,9 @@
+using BedayaGroup.Application.Cash;
 using BedayaGroup.Application.Common.Exceptions;
 using BedayaGroup.Application.Common.Interfaces;
 using BedayaGroup.Application.Common.Models;
 using BedayaGroup.Application.Projects.DTOs;
+using BedayaGroup.Domain.Entities;
 using BedayaGroup.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -28,16 +30,44 @@ public class GetProjectsQueryHandler : IRequestHandler<GetProjectsQuery, ApiResp
             query = query.Where(p => p.Name.Contains(request.Search));
         }
 
-        var projectedQuery = query.OrderByDescending(p => p.CreatedAt)
-            .Select(p => new ProjectDto(
+        var pageIndex = request.PageIndex < 1 ? 1 : request.PageIndex;
+        var pageSize = request.PageSize < 1 ? 10 : (request.PageSize > 100 ? 100 : request.PageSize);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var projects = await query
+            .OrderByDescending(p => p.CreatedAt)
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        var projectIds = projects.Select(p => p.Id).ToList();
+        var storages = await _context.CashStorages
+            .AsNoTracking()
+            .Include(cs => cs.CashTransactions)
+            .Where(cs => cs.Type == CashStorageType.Project
+                      && cs.ProjectId != null
+                      && projectIds.Contains(cs.ProjectId.Value))
+            .ToListAsync(cancellationToken);
+
+        var storageByProject = storages
+            .Where(cs => cs.ProjectId.HasValue)
+            .GroupBy(cs => cs.ProjectId!.Value)
+            .ToDictionary(g => g.Key, g => g.First());
+
+        var items = projects.Select(p =>
+        {
+            storageByProject.TryGetValue(p.Id, out var storage);
+            return new ProjectDto(
                 p.Id,
                 p.Name,
                 p.StartDate,
                 p.IsActive,
-                p.CreatedAt
-            ));
+                p.CreatedAt,
+                storage?.Id,
+                storage == null ? 0m : ProjectCashStorage.ComputeBalance(storage));
+        }).ToList();
 
-        var result = await PaginatedList<ProjectDto>.CreateAsync(projectedQuery, request.PageIndex, request.PageSize, cancellationToken);
+        var result = new PaginatedList<ProjectDto>(items, totalCount, pageIndex, pageSize);
         return ApiResponse<PaginatedList<ProjectDto>>.SuccessResult(result);
     }
 }
@@ -64,12 +94,16 @@ public class GetProjectByIdQueryHandler : IRequestHandler<GetProjectByIdQuery, A
             throw new NotFoundException("المشروع غير موجود");
         }
 
+        var storage = await ProjectCashStorage.FindAsync(_context, project.Id, cancellationToken);
+
         var dto = new ProjectDto(
             project.Id,
             project.Name,
             project.StartDate,
             project.IsActive,
-            project.CreatedAt
+            project.CreatedAt,
+            storage?.Id,
+            storage == null ? 0m : ProjectCashStorage.ComputeBalance(storage)
         );
 
         return ApiResponse<ProjectDto>.SuccessResult(dto);
@@ -113,7 +147,7 @@ public class GetProjectFinancialSummaryQueryHandler : IRequestHandler<GetProject
             .SumAsync(ct => (decimal?)ct.Amount, cancellationToken) ?? 0m;
 
         var cashOut = await _context.CashTransactions
-            .Where(ct => ct.ProjectId == request.ProjectId && (ct.Type == CashTransactionType.CashOut || ct.Type == CashTransactionType.ExpensePayment || ct.Type == CashTransactionType.AdvanceGiven || ct.Type == CashTransactionType.OtherExpense))
+            .Where(ct => ct.ProjectId == request.ProjectId && (ct.Type == CashTransactionType.CashOut || ct.Type == CashTransactionType.ExpensePayment || ct.Type == CashTransactionType.OtherExpense))
             .SumAsync(ct => (decimal?)ct.Amount, cancellationToken) ?? 0m;
 
         var summary = new ProjectFinancialSummaryDto(

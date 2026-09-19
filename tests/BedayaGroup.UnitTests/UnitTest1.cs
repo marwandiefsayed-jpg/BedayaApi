@@ -15,11 +15,15 @@ public class ValidationTests
         var request = new CreateExpenseRequest(
             ExpenseNumber: "EXP-001",
             ProjectId: 1,
-            SupplierId: 1,
+            StorageId: null,
             ExpenseDate: DateTime.UtcNow,
             Description: "اختبار المصروف",
-            TotalAmount: 0m, // Invalid total amount
-            Notes: null
+            TotalAmount: 0m,
+            Notes: null,
+            MaterialName: "اسمنت",
+            Unit: "طن",
+            Quantity: 10,
+            UnitPrice: 0
         );
 
         // Act

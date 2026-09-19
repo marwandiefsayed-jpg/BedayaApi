@@ -2,6 +2,7 @@ using BedayaGroup.Application.Common.Models;
 using BedayaGroup.Application.Expenses.Commands;
 using BedayaGroup.Application.Expenses.DTOs;
 using BedayaGroup.Application.Expenses.Queries;
+using BedayaGroup.Application.Reports.Queries;
 using BedayaGroup.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,12 @@ public class ExpensesController : ApiControllerBase
         [FromQuery] int pageIndex = 1,
         [FromQuery] int pageSize = 10,
         [FromQuery] int? projectId = null,
-        [FromQuery] int? supplierId = null,
+        [FromQuery] int? storageId = null,
         [FromQuery] DateTime? fromDate = null,
         [FromQuery] DateTime? toDate = null,
         [FromQuery] ExpenseStatus? status = null)
     {
-        var result = await Mediator.Send(new GetExpensesQuery(pageIndex, pageSize, projectId, supplierId, fromDate, toDate, status));
+        var result = await Mediator.Send(new GetExpensesQuery(pageIndex, pageSize, projectId, storageId, fromDate, toDate, status));
         return Ok(result);
     }
 
@@ -59,5 +60,22 @@ public class ExpensesController : ApiControllerBase
         var result = await Mediator.Send(new UpdateExpenseCommand(id, request));
         if (!result.Success) return BadRequest(result);
         return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "CompanyOwnerOnly")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteExpense(int id)
+    {
+        var result = await Mediator.Send(new DeleteExpenseCommand(id));
+        return Ok(result);
+    }
+
+    [HttpPost("export-pdf")]
+    [Authorize(Policy = "FinancialWriteAccess")]
+    public async Task<IActionResult> ExportExpensesPdf([FromQuery] int? projectId = null, [FromQuery] string? materialName = null)
+    {
+        var result = await Mediator.Send(new ExportProjectExpensesPdfQuery(projectId, materialName));
+        if (!result.Success || result.Data == null) return BadRequest(result);
+        return File(result.Data.FileBytes, result.Data.ContentType, result.Data.FileName);
     }
 }

@@ -1,19 +1,12 @@
-using BedayaGroup.Application.Advances.DTOs;
-using BedayaGroup.Application.Advances.Queries;
 using BedayaGroup.Application.Common.Models;
-using BedayaGroup.Application.Engineers.Commands;
-using BedayaGroup.Application.Engineers.DTOs;
-using BedayaGroup.Application.Engineers.Queries;
 using BedayaGroup.Application.Expenses.DTOs;
 using BedayaGroup.Application.Expenses.Queries;
 using BedayaGroup.Application.Projects.Commands;
 using BedayaGroup.Application.Projects.DTOs;
 using BedayaGroup.Application.Projects.Queries;
+using BedayaGroup.Application.Reports.Queries;
 using BedayaGroup.Application.Shareholders.DTOs;
 using BedayaGroup.Application.Shareholders.Queries;
-using BedayaGroup.Application.Suppliers.DTOs;
-using BedayaGroup.Application.Suppliers.Queries;
-using BedayaGroup.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,7 +49,7 @@ public class ProjectsController : ApiControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "CompanyOwnerOnly")]
     public async Task<ActionResult<ApiResponse<bool>>> DeleteProject(int id)
     {
         var result = await Mediator.Send(new DeleteProjectCommand(id));
@@ -85,37 +78,20 @@ public class ProjectsController : ApiControllerBase
         return Ok(result);
     }
 
-    // Suppliers under Project
-    [HttpGet("{projectId}/suppliers")]
-    public async Task<ActionResult<ApiResponse<PaginatedList<SupplierDto>>>> GetProjectSuppliers(int projectId, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] string? search = null, [FromQuery] SupplierType? type = null)
+    [HttpPost("{projectId}/export-expenses-pdf")]
+    [Authorize(Policy = "FinancialWriteAccess")]
+    public async Task<IActionResult> ExportProjectExpensesPdf(int projectId, [FromQuery] string? materialName = null)
     {
-        var result = await Mediator.Send(new GetSuppliersQuery(pageIndex, pageSize, search, type, projectId));
-        return Ok(result);
-    }
+        var result = await Mediator.Send(new ExportProjectExpensesPdfQuery(projectId, materialName));
+        if (!result.Success || result.Data == null)
+        {
+            return BadRequest(result);
+        }
 
-    // Advances (عهود) under Project
-    [HttpGet("{projectId}/advances")]
-    public async Task<ActionResult<ApiResponse<PaginatedList<AdvanceDto>>>> GetProjectAdvances(int projectId, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50, [FromQuery] AdvanceStatus? status = null)
-    {
-        var result = await Mediator.Send(new GetAdvancesQuery(pageIndex, pageSize, null, projectId, status));
-        return Ok(result);
-    }
-
-    // Engineers assigned to Project
-    [HttpGet("{projectId}/engineers")]
-    public async Task<ActionResult<ApiResponse<List<ProjectEngineerDto>>>> GetProjectEngineers(int projectId)
-    {
-        var result = await Mediator.Send(new GetProjectEngineersQuery(projectId));
-        return Ok(result);
-    }
-
-    [HttpPost("{projectId}/engineers")]
-    [Authorize(Policy = "CompanyOwnerOnly")]
-    public async Task<ActionResult<ApiResponse<ProjectEngineerDto>>> AssignEngineerToProject(int projectId, [FromBody] AssignEngineerToProjectRequest request)
-    {
-        if (projectId != request.ProjectId) return BadRequest(ApiResponse.FailureResult("معرف المشروع غير متطابق"));
-        var result = await Mediator.Send(new AssignEngineerToProjectCommand(request));
-        if (!result.Success) return BadRequest(result);
-        return Ok(result);
+        return File(
+            result.Data.FileBytes,
+            result.Data.ContentType,
+            result.Data.FileName
+        );
     }
 }

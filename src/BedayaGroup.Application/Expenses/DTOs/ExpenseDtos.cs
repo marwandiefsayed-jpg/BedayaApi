@@ -4,8 +4,8 @@ namespace BedayaGroup.Application.Expenses.DTOs;
 
 public record CreateExpenseRequest(
     string ExpenseNumber,
-    int ProjectId,
-    int SupplierId,
+    int? ProjectId,
+    int? StorageId,
     DateTime ExpenseDate,
     string Description,
     decimal TotalAmount,
@@ -13,11 +13,13 @@ public record CreateExpenseRequest(
     string MaterialName = "",
     string Unit = "",
     decimal Quantity = 0m,
-    decimal UnitPrice = 0m
+    decimal UnitPrice = 0m,
+    bool TargetAllProjects = false,
+    List<int>? ProjectIds = null
 );
 
 public record UpdateExpenseRequest(
-    int SupplierId,
+    int? StorageId,
     DateTime ExpenseDate,
     string Description,
     decimal TotalAmount,
@@ -33,8 +35,8 @@ public record ExpenseDto(
     string ExpenseNumber,
     int ProjectId,
     string ProjectName,
-    int SupplierId,
-    string SupplierName,
+    int? StorageId,
+    string? StorageName,
     DateTime ExpenseDate,
     string Description,
     decimal TotalAmount,

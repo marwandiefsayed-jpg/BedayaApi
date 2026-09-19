@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "E:\\BedayaApi\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|e:\\bedayaapi\\src\\bedayagroup.api\\bedayagroup.api.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|solutionrelative:src\\bedayagroup.api\\bedayagroup.api.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{FB1399B0-2227-41EC-9016-E2EF00A973D4}|src\\BedayaGroup.Application\\BedayaGroup.Application.csproj|e:\\bedayaapi\\src\\bedayagroup.application\\shareholders\\commands\\shareholdercommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{FB1399B0-2227-41EC-9016-E2EF00A973D4}|src\\BedayaGroup.Application\\BedayaGroup.Application.csproj|solutionrelative:src\\bedayagroup.application\\shareholders\\commands\\shareholdercommands.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -30,19 +34,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "BedayaGroup.API.http",
+              "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.http",
+              "RelativeDocumentMoniker": "src\\BedayaGroup.API\\BedayaGroup.API.http",
+              "ToolTip": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.http",
+              "RelativeToolTip": "src\\BedayaGroup.API\\BedayaGroup.API.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2026-09-17T00:36:06.426Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "ShareholderCommands.cs",
               "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
               "RelativeDocumentMoniker": "src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
               "ToolTip": "E:\\BedayaApi\\src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
               "RelativeToolTip": "src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
-              "ViewState": "AgIAAC4AAAAAAAAAAAAawEAAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAC8AAAAAAAAAAAAawDUAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-10T00:50:50.827Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Microsoft.CSharp.Core.targets",
               "DocumentMoniker": "E:\\Visual Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
               "RelativeDocumentMoniker": "..\\Visual Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
@@ -54,7 +71,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "BedayaGroup.API.csproj",
               "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
               "RelativeDocumentMoniker": "src\\BedayaGroup.API\\BedayaGroup.API.csproj",

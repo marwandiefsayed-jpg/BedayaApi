@@ -18,7 +18,6 @@ public record RecordCashTransactionRequest(
     int CashStorageId,
     int? ProjectId,
     int? ExpenseId,
-    int? AdvanceId,
     string Description,
     string? ReferenceNumber,
     string? Notes
@@ -59,8 +58,6 @@ public record CashTransactionDto(
     string? ProjectName,
     int? ExpenseId,
     string? ExpenseNumber,
-    int? AdvanceId,
-    string? AdvanceNumber,
     string Description,
     string? ReferenceNumber,
     int CreatedByUserId,

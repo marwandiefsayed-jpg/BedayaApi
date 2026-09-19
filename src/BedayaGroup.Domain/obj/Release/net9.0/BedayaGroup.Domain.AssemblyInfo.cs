@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BedayaGroup.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af2627d5b4ef3a9c7fdafd514502717b192dd7c5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e3bd00917f0a32a241eccd9be9e6a1170f330fb5")]
 [assembly: System.Reflection.AssemblyProductAttribute("BedayaGroup.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BedayaGroup.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

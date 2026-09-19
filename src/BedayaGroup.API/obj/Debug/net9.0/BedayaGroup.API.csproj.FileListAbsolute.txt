@@ -549,7 +549,6 @@ E:\BedayaApi\src\bedayagroup.api\obj\Debug\net9.0\staticwebassets.build.json
 E:\BedayaApi\src\bedayagroup.api\obj\Debug\net9.0\staticwebassets.build.json.cache
 E:\BedayaApi\src\bedayagroup.api\obj\Debug\net9.0\staticwebassets.development.json
 E:\BedayaApi\src\bedayagroup.api\obj\Debug\net9.0\staticwebassets.build.endpoints.json
-E:\BedayaApi\src\bedayagroup.api\obj\Debug\net9.0\BedayaGr.09F4E01B.Up2Date
 E:\BedayaApi\src\bedayagroup.api\obj\Debug\net9.0\BedayaGroup.API.dll
 E:\BedayaApi\src\bedayagroup.api\obj\Debug\net9.0\refint\BedayaGroup.API.dll
 E:\BedayaApi\src\bedayagroup.api\obj\Debug\net9.0\BedayaGroup.API.pdb
@@ -596,3 +595,10 @@ E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\runtimes\win-x86\native\libstd
 E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\runtimes\win-x86\native\libwinpthread-1.dll
 E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\runtimes\win-x86\native\qpdf.dll
 E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\Assets\bedaya-logo.png
+E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\publish\web.config
+E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\publish\appsettings.Development.json
+E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\publish\appsettings.json
+E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\publish\BedayaGroup.API.deps.json
+E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\publish\BedayaGroup.API.runtimeconfig.json
+E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\publish\BedayaGroup.API.staticwebassets.endpoints.json
+E:\BedayaApi\src\BedayaGroup.API\obj\Debug\net9.0\BedayaGr.09F4E01B.Up2Date

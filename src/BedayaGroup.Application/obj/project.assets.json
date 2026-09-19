@@ -695,11 +695,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "e:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
+      "projectUniqueName": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
       "projectName": "BedayaGroup.Application",
-      "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
+      "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\BedayaGroup.Application.csproj",
       "packagesPath": "D:\\.nuget\\packages",
-      "outputPath": "e:\\BedayaApi\\src\\BedayaGroup.Application\\obj\\",
+      "outputPath": "E:\\BedayaApi\\src\\BedayaGroup.Application\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -720,8 +720,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
-              "projectPath": "e:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
+            "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj": {
+              "projectPath": "E:\\BedayaApi\\src\\BedayaGroup.Domain\\BedayaGroup.Domain.csproj"
             }
           }
         }

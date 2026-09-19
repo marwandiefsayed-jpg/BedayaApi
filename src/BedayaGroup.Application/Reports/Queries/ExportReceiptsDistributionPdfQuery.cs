@@ -68,12 +68,18 @@ public class ExportReceiptsDistributionPdfQueryHandler
             shareName = share.Name;
         }
 
+        int? effectiveShareholderId = req.ShareholderId;
+        if (!effectiveShareholderId.HasValue && req.ShareholderIds != null && req.ShareholderIds.Count == 1)
+        {
+            effectiveShareholderId = req.ShareholderIds[0];
+        }
+
         string? shareholderName = null;
-        if (req.ShareholderId.HasValue)
+        if (effectiveShareholderId.HasValue)
         {
             var shareholder = await _context.Shareholders
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == req.ShareholderId.Value, cancellationToken);
+                .FirstOrDefaultAsync(s => s.Id == effectiveShareholderId.Value, cancellationToken);
 
             if (shareholder == null)
             {
@@ -91,6 +97,7 @@ public class ExportReceiptsDistributionPdfQueryHandler
             .Include(sc => sc.Shareholder)
                 .ThenInclude(s => s.Project)
             .Include(sc => sc.Project)
+            .Where(sc => sc.Shareholder != null && sc.Shareholder.IsActive)
             .AsNoTracking()
             .AsQueryable();
 
@@ -100,9 +107,14 @@ public class ExportReceiptsDistributionPdfQueryHandler
             dbQuery = dbQuery.Where(sc => sc.ProjectId == pId || (sc.ProjectId == null && sc.Shareholder.ProjectId == pId));
         }
 
-        if (req.ShareholderId.HasValue)
+        if (req.ShareholderIds != null && req.ShareholderIds.Any())
         {
-            var shId = req.ShareholderId.Value;
+            var shIds = req.ShareholderIds;
+            dbQuery = dbQuery.Where(sc => shIds.Contains(sc.ShareholderId));
+        }
+        else if (effectiveShareholderId.HasValue)
+        {
+            var shId = effectiveShareholderId.Value;
             dbQuery = dbQuery.Where(sc => sc.ShareholderId == shId);
         }
 
@@ -125,7 +137,8 @@ public class ExportReceiptsDistributionPdfQueryHandler
         }
 
         var contributions = await dbQuery
-            .OrderBy(sc => sc.ContributionDate)
+            .OrderBy(sc => sc.Shareholder != null ? sc.Shareholder.Name : "")
+            .ThenByDescending(sc => sc.ContributionDate)
             .ThenBy(sc => sc.Id)
             .ToListAsync(cancellationToken);
 
@@ -162,6 +175,174 @@ public class ExportReceiptsDistributionPdfQueryHandler
             allocationsByContribution.GetValueOrDefault(sc.Id, new List<AllocationItemDto>())
         )).ToList();
 
+        // Calculate expected and remaining totals if generating report for a specific shareholder
+        decimal totalExpected = 0m;
+        decimal totalRemaining = 0m;
+        decimal excessCredit = 0m;
+        List<ShareholderSummaryItemDto>? shareholderSummariesList = null;
+
+        int? targetSingleShareholderId = req.ShareholderId ?? (req.ShareholderIds != null && req.ShareholderIds.Count == 1 ? (int?)req.ShareholderIds[0] : null);
+
+        if (targetSingleShareholderId.HasValue)
+        {
+            var shId = targetSingleShareholderId.Value;
+            var shareholderEntity = await _context.Shareholders
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == shId, cancellationToken);
+
+            if (shareholderEntity != null)
+            {
+                shareholderName = shareholderEntity.Name;
+            }
+
+            if (shareholderEntity?.ProjectId != null)
+            {
+                var pInsts = await _context.ProjectInstallments
+                    .Where(i => i.ProjectId == shareholderEntity.ProjectId.Value && i.IsActive &&
+                        (!i.TargetShareholders.Any() || i.TargetShareholders.Any(target => target.ShareholderId == shId)))
+                    .AsNoTracking()
+                    .ToListAsync(cancellationToken);
+
+                var shAllocations = await _context.ShareholderPaymentAllocations
+                    .Where(a => a.ShareholderContribution.ShareholderId == shId)
+                    .GroupBy(a => a.ProjectInstallmentId)
+                    .Select(g => new { InstallmentId = g.Key, TotalPaid = g.Sum(a => a.AmountAllocated) })
+                    .ToListAsync(cancellationToken);
+
+                var paidLookup = shAllocations.ToDictionary(x => x.InstallmentId, x => x.TotalPaid);
+
+                var shPenalties = await _context.ShareholderInstallmentPenalties
+                    .Where(p => p.ShareholderId == shId)
+                    .GroupBy(p => p.ProjectInstallmentId)
+                    .Select(g => new { InstallmentId = g.Key, TotalPenalty = g.Sum(p => p.PenaltyAmount) })
+                    .ToListAsync(cancellationToken);
+
+                var penaltyLookup = shPenalties.ToDictionary(x => x.InstallmentId, x => x.TotalPenalty);
+
+                var totalContribs = receiptItems.Where(r => r.ShareholderName == shareholderEntity.Name).Sum(r => r.AmountReceived);
+                var pool = totalContribs;
+
+                foreach (var inst in pInsts)
+                {
+                    var baseReq = inst.AmountPerShare * shareholderEntity.NumberOfShares;
+                    var pen = penaltyLookup.GetValueOrDefault(inst.Id, 0m);
+                    var reqAmt = baseReq + pen;
+                    var paid = Math.Min(pool, reqAmt);
+                    var rem = Math.Max(0m, reqAmt - paid);
+                    pool = Math.Max(0m, pool - paid);
+
+                    totalExpected += reqAmt;
+                    totalRemaining += rem;
+                }
+                shareholderSummariesList = new List<ShareholderSummaryItemDto>
+                {
+                    new ShareholderSummaryItemDto(
+                        shareholderEntity.Id,
+                        shareholderEntity.Name,
+                        shareholderEntity.Phone,
+                        shareholderEntity.NumberOfShares,
+                        shareholderEntity.Project?.Name,
+                        totalExpected,
+                        totalContribs,
+                        totalRemaining
+                    )
+                };
+            }
+        }
+        else
+        {
+            var activeShareholdersQuery = _context.Shareholders
+                .Include(s => s.Project)
+                .Where(s => s.IsActive)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (req.ProjectId.HasValue)
+            {
+                activeShareholdersQuery = activeShareholdersQuery.Where(s => s.ProjectId == req.ProjectId.Value);
+            }
+
+            if (req.ShareId.HasValue)
+            {
+                activeShareholdersQuery = activeShareholdersQuery.Where(s => s.ShareId == req.ShareId.Value);
+            }
+
+            if (req.ShareholderIds != null && req.ShareholderIds.Any())
+            {
+                activeShareholdersQuery = activeShareholdersQuery.Where(s => req.ShareholderIds.Contains(s.Id));
+            }
+
+            var activeShareholders = await activeShareholdersQuery.ToListAsync(cancellationToken);
+            var projectIds = activeShareholders.Select(s => s.ProjectId).Where(p => p.HasValue).Select(p => p!.Value).Distinct().ToList();
+
+            var allInstallments = await _context.ProjectInstallments
+                .Include(i => i.TargetShareholders)
+                .Where(i => projectIds.Contains(i.ProjectId) && i.IsActive)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            var allPenalties = await _context.ShareholderInstallmentPenalties
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            var allContribs = await _context.ShareholderContributions
+                .Where(c => c.Shareholder != null && c.Shareholder.IsActive)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            var summaries = new List<ShareholderSummaryItemDto>();
+
+            foreach (var sh in activeShareholders)
+            {
+                if (!sh.ProjectId.HasValue) continue;
+
+                var pInsts = allInstallments.Where(i => i.ProjectId == sh.ProjectId.Value &&
+                    (!i.TargetShareholders.Any() || i.TargetShareholders.Any(target => target.ShareholderId == sh.Id))).ToList();
+                var shPenalties = allPenalties.Where(p => p.ShareholderId == sh.Id).GroupBy(p => p.ProjectInstallmentId)
+                    .ToDictionary(g => g.Key, g => g.Sum(p => p.PenaltyAmount));
+
+                var shTotalContribs = allContribs.Where(c => c.ShareholderId == sh.Id).Sum(c => c.Amount);
+                var pool = shTotalContribs;
+
+                decimal shExpected = 0m;
+                decimal shRemaining = 0m;
+
+                foreach (var inst in pInsts)
+                {
+                    var baseReq = inst.AmountPerShare * sh.NumberOfShares;
+                    var pen = shPenalties.GetValueOrDefault(inst.Id, 0m);
+                    var reqAmt = baseReq + pen;
+                    var paid = Math.Min(pool, reqAmt);
+                    var rem = Math.Max(0m, reqAmt - paid);
+                    pool = Math.Max(0m, pool - paid);
+
+                    shExpected += reqAmt;
+                    shRemaining += rem;
+                }
+
+                totalExpected += shExpected;
+                totalRemaining += shRemaining;
+
+                summaries.Add(new ShareholderSummaryItemDto(
+                    sh.Id,
+                    sh.Name,
+                    sh.Phone,
+                    sh.NumberOfShares,
+                    sh.Project?.Name,
+                    shExpected,
+                    shTotalContribs,
+                    shRemaining
+                ));
+            }
+
+            if (req.OnlyOutstandingShareholders)
+            {
+                summaries = summaries.Where(s => s.TotalRemaining > 0m).ToList();
+            }
+
+            shareholderSummariesList = summaries.OrderBy(s => s.Name).ToList();
+        }
+
         var reportData = new ReceiptsDistributionReportDto(
             projectName,
             shareName,
@@ -169,7 +350,11 @@ public class ExportReceiptsDistributionPdfQueryHandler
             req.ToDate,
             DateTime.UtcNow.AddHours(3), // Local Egypt Time
             receiptItems,
-            shareholderName
+            shareholderName,
+            TotalExpected: totalExpected,
+            TotalRemaining: totalRemaining,
+            ExcessCredit: excessCredit,
+            ShareholderSummaries: shareholderSummariesList
         );
 
         // 6. Generate PDF Document in Memory

@@ -1,7 +1,9 @@
+using BedayaGroup.Application.Cash;
 using BedayaGroup.Application.Common.Exceptions;
 using BedayaGroup.Application.Common.Interfaces;
 using BedayaGroup.Application.Common.Models;
 using BedayaGroup.Application.Projects.DTOs;
+using BedayaGroup.Application.Storages;
 using BedayaGroup.Domain.Entities;
 using BedayaGroup.Domain.Enums;
 using FluentValidation;
@@ -46,9 +48,12 @@ public class CreateProjectCommandHandler : IRequestHandler<CreateProjectCommand,
         _context.Projects.Add(project);
         await _context.SaveChangesAsync(cancellationToken);
 
+        var storage = await ProjectCashStorage.GetOrCreateAsync(_context, project, cancellationToken);
+        await ProjectMaterialStorage.GetOrCreateAsync(_context, project, cancellationToken);
+
         await _auditService.LogAsync("Create", "Project", project.Id.ToString(), null, new { project.Name, project.StartDate }, cancellationToken);
 
-        var dto = new ProjectDto(project.Id, project.Name, project.StartDate, project.IsActive, project.CreatedAt);
+        var dto = new ProjectDto(project.Id, project.Name, project.StartDate, project.IsActive, project.CreatedAt, storage.Id, ProjectCashStorage.ComputeBalance(storage));
 
         return ApiResponse<ProjectDto>.SuccessResult(dto, "تم إنشاء المشروع بنجاح");
     }
@@ -87,9 +92,30 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
 
         await _context.SaveChangesAsync(cancellationToken);
 
+        var storage = await ProjectCashStorage.GetOrCreateAsync(_context, project, cancellationToken);
+        var expectedName = ProjectCashStorage.BuildName(project.Name);
+        if (storage.Name != expectedName)
+        {
+            storage.Name = expectedName;
+            storage.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        var materialStorage = await ProjectMaterialStorage.FindAsync(_context, project.Id, cancellationToken);
+        if (materialStorage != null)
+        {
+            var expectedMaterialName = ProjectMaterialStorage.BuildName(project.Name);
+            if (materialStorage.Name != expectedMaterialName)
+            {
+                materialStorage.Name = expectedMaterialName;
+                materialStorage.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+        }
+
         await _auditService.LogAsync("Update", "Project", project.Id.ToString(), oldValues, new { project.Name, project.StartDate, project.IsActive }, cancellationToken);
 
-        var dto = new ProjectDto(project.Id, project.Name, project.StartDate, project.IsActive, project.CreatedAt);
+        var dto = new ProjectDto(project.Id, project.Name, project.StartDate, project.IsActive, project.CreatedAt, storage.Id, ProjectCashStorage.ComputeBalance(storage));
 
         return ApiResponse<ProjectDto>.SuccessResult(dto, "تم تحديث بيانات المشروع بنجاح");
     }
@@ -131,30 +157,24 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
                 .Where(a => installmentIds.Contains(a.ProjectInstallmentId))
                 .ToListAsync(cancellationToken);
             _context.ShareholderPaymentAllocations.RemoveRange(allocations);
+
+            // Penalties also have a restricted FK to installments.
+            var penalties = await _context.ShareholderInstallmentPenalties
+                .Where(p => installmentIds.Contains(p.ProjectInstallmentId))
+                .ToListAsync(cancellationToken);
+            _context.ShareholderInstallmentPenalties.RemoveRange(penalties);
         }
 
         // ── 2. Delete ProjectInstallments ──
         _context.ProjectInstallments.RemoveRange(installments);
 
-        // ── 3. Delete ProjectEngineers (NOT NULL FK) ──
-        var engineers = await _context.ProjectEngineers
-            .Where(pe => pe.ProjectId == projectId)
-            .ToListAsync(cancellationToken);
-        _context.ProjectEngineers.RemoveRange(engineers);
-
-        // ── 4. Delete Expenses (NOT NULL FK) ──
+        // ── 3. Delete Expenses (NOT NULL FK) ──
         var expenses = await _context.Expenses
             .Where(e => e.ProjectId == projectId)
             .ToListAsync(cancellationToken);
         _context.Expenses.RemoveRange(expenses);
 
-        // ── 5. Delete Advances (NOT NULL FK) ──
-        var advances = await _context.Advances
-            .Where(a => a.ProjectId == projectId)
-            .ToListAsync(cancellationToken);
-        _context.Advances.RemoveRange(advances);
-
-        // ── 6. Nullify nullable FK references ──
+        // ── 4. Nullify nullable FK references ──
         var shareholders = await _context.Shareholders
             .Where(s => s.ProjectId == projectId)
             .ToListAsync(cancellationToken);
@@ -170,18 +190,60 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
             .ToListAsync(cancellationToken);
         foreach (var ct in cashTransactions) ct.ProjectId = null;
 
+        // ── Project dedicated cash storage: remove it together with the project ──
+        var projectStorages = await _context.CashStorages
+            .Where(cs => cs.Type == CashStorageType.Project && cs.ProjectId == projectId)
+            .ToListAsync(cancellationToken);
+        var projectStorageIds = projectStorages.Select(cs => cs.Id).ToList();
+        var expenseIds = expenses.Select(e => e.Id).ToList();
+
+        var projectStorageTransactions = await _context.CashTransactions
+            .Where(ct => projectStorageIds.Contains(ct.CashStorageId))
+            .ToListAsync(cancellationToken);
+
+        // Clear the nullable contribution reference explicitly before deleting its transaction.
+        // This keeps EF's tracked graph consistent with the database's SET NULL rule.
+        var projectStorageTransactionIds = projectStorageTransactions.Select(ct => ct.Id).ToList();
+        if (projectStorageTransactionIds.Any())
+        {
+            var linkedContributions = await _context.ShareholderContributions
+                .Where(sc => sc.TransactionId.HasValue && projectStorageTransactionIds.Contains(sc.TransactionId.Value))
+                .ToListAsync(cancellationToken);
+            foreach (var contribution in linkedContributions) contribution.TransactionId = null;
+        }
+        _context.CashTransactions.RemoveRange(projectStorageTransactions);
+
+        // Detach any remaining expense link so the expenses can be deleted (FK is restricted).
+        var expenseLinkedTransactions = await _context.CashTransactions
+            .Where(ct => ct.ExpenseId != null && expenseIds.Contains(ct.ExpenseId.Value))
+            .ToListAsync(cancellationToken);
+        foreach (var ct in expenseLinkedTransactions)
+        {
+            ct.ExpenseId = null;
+            ct.ProjectId = null;
+        }
+
+        _context.CashStorages.RemoveRange(projectStorages);
+
         var cashStorages = await _context.CashStorages
-            .Where(cs => cs.ProjectId == projectId)
+            .Where(cs => cs.ProjectId == projectId && cs.Type != CashStorageType.Project)
             .ToListAsync(cancellationToken);
         foreach (var cs in cashStorages) cs.ProjectId = null;
 
-        var suppliers = await _context.Suppliers
-            .Where(s => s.ProjectId == projectId)
+        // ── Project dedicated material warehouse: remove it with its own movements ──
+        var projectMaterialStorages = await _context.Storages
+            .Where(s => s.Type == StorageType.Project && s.ProjectId == projectId)
             .ToListAsync(cancellationToken);
-        foreach (var s in suppliers) s.ProjectId = null;
+        var projectMaterialStorageIds = projectMaterialStorages.Select(s => s.Id).ToList();
+        var projectMaterialTransactions = await _context.StorageTransactions
+            .Where(st => projectMaterialStorageIds.Contains(st.StorageId))
+            .ToListAsync(cancellationToken);
+        _context.StorageTransactions.RemoveRange(projectMaterialTransactions);
+        _context.Storages.RemoveRange(projectMaterialStorages);
 
+        // Detach any remaining (company) storages that were linked to the project.
         var storages = await _context.Storages
-            .Where(s => s.ProjectId == projectId)
+            .Where(s => s.ProjectId == projectId && s.Type != StorageType.Project)
             .ToListAsync(cancellationToken);
         foreach (var s in storages) s.ProjectId = null;
 
@@ -190,7 +252,7 @@ public class DeleteProjectCommandHandler : IRequestHandler<DeleteProjectCommand,
             .ToListAsync(cancellationToken);
         foreach (var st in storageTransactions) st.ProjectId = null;
 
-        // ── 7. Finally delete the project ──
+        // ── 5. Finally delete the project ──
         _context.Projects.Remove(project);
 
         await _context.SaveChangesAsync(cancellationToken);

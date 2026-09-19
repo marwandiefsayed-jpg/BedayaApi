@@ -22,6 +22,17 @@ public record ReceiptItemDto(
     public decimal UnallocatedAmount => Math.Max(0, AmountReceived - TotalAllocated);
 }
 
+public record ShareholderSummaryItemDto(
+    int Id,
+    string Name,
+    string? Phone,
+    decimal NumberOfShares,
+    string? ProjectName,
+    decimal TotalExpected,
+    decimal TotalPaid,
+    decimal TotalRemaining
+);
+
 public record ReceiptsDistributionReportDto(
     string? ProjectName,
     string? ShareName,
@@ -29,7 +40,11 @@ public record ReceiptsDistributionReportDto(
     DateTime? ToDate,
     DateTime GeneratedAt,
     List<ReceiptItemDto> Receipts,
-    string? SelectedShareholderName = null
+    string? SelectedShareholderName = null,
+    decimal TotalExpected = 0m,
+    decimal TotalRemaining = 0m,
+    decimal ExcessCredit = 0m,
+    List<ShareholderSummaryItemDto>? ShareholderSummaries = null
 )
 {
     public bool IsSingleShareholderReport => !string.IsNullOrWhiteSpace(SelectedShareholderName);
@@ -44,3 +59,6 @@ public record ExportPdfResultDto(
     string FileName,
     string ContentType
 );
+
+public record StorageActivityPdfItemDto(DateTime Date, string TypeName, string? ProjectName, decimal Amount, string Description, string? ReferenceNumber);
+public record StorageActivityPdfReportDto(string StorageName, string? ProjectName, DateTime GeneratedAt, List<StorageActivityPdfItemDto> Transactions);

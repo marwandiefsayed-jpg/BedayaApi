@@ -32,6 +32,10 @@ public class JwtTokenService : IJwtTokenService
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim(ClaimTypes.Role, ((int)user.Role).ToString()),
+            new Claim("role", user.Role.ToString()),
+            new Claim("role", ((int)user.Role).ToString()),
             new Claim("FullName", user.FullName)
         };
 

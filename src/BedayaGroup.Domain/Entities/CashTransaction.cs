@@ -12,7 +12,6 @@ public class CashTransaction : BaseEntity
     public int CashStorageId { get; set; }
     public int? ProjectId { get; set; }
     public int? ExpenseId { get; set; }
-    public int? AdvanceId { get; set; }
     public string Description { get; set; } = string.Empty;
     public string? ReferenceNumber { get; set; }
     public int CreatedByUserId { get; set; }
@@ -21,6 +20,5 @@ public class CashTransaction : BaseEntity
     public CashStorage CashStorage { get; set; } = null!;
     public Project? Project { get; set; }
     public Expense? Expense { get; set; }
-    public Advance? Advance { get; set; }
     public User CreatedByUser { get; set; } = null!;
 }

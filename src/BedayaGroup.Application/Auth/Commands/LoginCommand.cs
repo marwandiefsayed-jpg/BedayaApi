@@ -68,10 +68,20 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ApiResponse<Aut
             user.Id,
             user.FullName,
             user.Username,
+            user.Role,
+            GetRoleName(user.Role),
             token,
             expiresAt
         );
 
         return ApiResponse<AuthResponse>.SuccessResult(authResponse, "تم تسجيل الدخول بنجاح");
     }
+
+    private static string GetRoleName(BedayaGroup.Domain.Enums.UserRole role) => role switch
+    {
+        BedayaGroup.Domain.Enums.UserRole.CompanyOwner => "مالك الشركة",
+        BedayaGroup.Domain.Enums.UserRole.ShareholdersOfficer => "مسؤول المساهمين",
+        BedayaGroup.Domain.Enums.UserRole.ExpensesOfficer => "مسؤول المصروفات والموردين",
+        _ => "مستخدم"
+    };
 }

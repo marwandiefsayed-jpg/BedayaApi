@@ -1,3 +1,4 @@
+using BedayaGroup.Application.Cash;
 using BedayaGroup.Application.Common.Exceptions;
 using BedayaGroup.Application.Common.Interfaces;
 using BedayaGroup.Application.Common.Models;
@@ -182,35 +183,13 @@ public class RecordShareholderContributionCommandHandler : IRequestHandler<Recor
             throw new NotFoundException("المساهم غير موجود");
         }
 
-        int targetStorageId = 0;
-        if (req.CashStorageId.HasValue && req.CashStorageId.Value > 0)
-        {
-            var existing = await _context.CashStorages.FirstOrDefaultAsync(cs => cs.Id == req.CashStorageId.Value, cancellationToken);
-            if (existing != null) targetStorageId = existing.Id;
-        }
+        var project = await _context.Projects
+            .FirstOrDefaultAsync(p => p.Id == req.ProjectId, cancellationToken)
+            ?? throw new NotFoundException("المشروع المحدد غير موجود");
 
-        if (targetStorageId == 0)
-        {
-            var anyStorage = await _context.CashStorages.FirstOrDefaultAsync(cancellationToken);
-            if (anyStorage != null)
-            {
-                targetStorageId = anyStorage.Id;
-            }
-            else
-            {
-                var defaultStorage = new CashStorage
-                {
-                    Name = "الخزينة الرئيسية",
-                    Type = CashStorageType.Company,
-                    OpeningBalance = 0,
-                    IsActive = true,
-                    CreatedAt = DateTime.UtcNow
-                };
-                _context.CashStorages.Add(defaultStorage);
-                await _context.SaveChangesAsync(cancellationToken);
-                targetStorageId = defaultStorage.Id;
-            }
-        }
+        // Contributions are project income: they always land in the project's own storage.
+        var projectStorage = await ProjectCashStorage.GetOrCreateAsync(_context, project, cancellationToken);
+        int targetStorageId = projectStorage.Id;
 
         string descriptionText = !string.IsNullOrWhiteSpace(req.Description)
             ? req.Description
@@ -227,7 +206,8 @@ public class RecordShareholderContributionCommandHandler : IRequestHandler<Recor
 
         // Load all installments for this project ordered chronologically to apply cascading
         var allInstallments = await _context.ProjectInstallments
-            .Where(i => i.ProjectId == req.ProjectId && i.IsActive)
+            .Where(i => i.ProjectId == req.ProjectId && i.IsActive &&
+                (!i.TargetShareholders.Any() || i.TargetShareholders.Any(target => target.ShareholderId == req.ShareholderId)))
             .OrderBy(i => i.EndDate)
             .ThenBy(i => i.Id)
             .ToListAsync(cancellationToken);
@@ -250,7 +230,6 @@ public class RecordShareholderContributionCommandHandler : IRequestHandler<Recor
         {
             // Create cash transaction
             var txNumber = $"SHR-{DateTime.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid().ToString()[..4].ToUpper()}";
-            var project = await _context.Projects.FindAsync(new object[] { req.ProjectId }, cancellationToken);
 
             var cashTx = new CashTransaction
             {
@@ -384,8 +363,15 @@ public class DeleteShareholderCommandHandler : IRequestHandler<DeleteShareholder
             throw new NotFoundException("المساهم غير موجود");
         }
 
-        // Delete payment allocations
+        // Delete penalties
+        var penalties = await _context.ShareholderInstallmentPenalties
+            .Where(p => p.ShareholderId == request.Id)
+            .ToListAsync(cancellationToken);
+        _context.ShareholderInstallmentPenalties.RemoveRange(penalties);
+
+        // Delete contributions, allocations, and linked storage cash transactions
         var contributions = await _context.ShareholderContributions
+            .Include(c => c.Transaction)
             .Where(c => c.ShareholderId == request.Id)
             .ToListAsync(cancellationToken);
 
@@ -395,13 +381,22 @@ public class DeleteShareholderCommandHandler : IRequestHandler<DeleteShareholder
             .ToListAsync(cancellationToken);
 
         _context.ShareholderPaymentAllocations.RemoveRange(allocations);
+
+        foreach (var c in contributions)
+        {
+            if (c.Transaction != null)
+            {
+                _context.CashTransactions.Remove(c.Transaction);
+            }
+        }
+
         _context.ShareholderContributions.RemoveRange(contributions);
         _context.Shareholders.Remove(shareholder);
 
         await _context.SaveChangesAsync(cancellationToken);
         await _auditService.LogAsync("Delete", "Shareholder", shareholder.Id.ToString(), new { shareholder.Code, shareholder.Name }, null, cancellationToken);
 
-        return ApiResponse<bool>.SuccessResult(true, "تم حذف المساهم بنجاح");
+        return ApiResponse<bool>.SuccessResult(true, "تم حذف المساهم وجميع المعاملات والعمليات المرتبطة بـ الخزينة بنجاح");
     }
 }
 
@@ -475,7 +470,8 @@ public class UpdateShareholderContributionCommandHandler : IRequestHandler<Updat
             {
                 int projectId = contribution.ProjectId.Value;
                 var allInstallments = await _context.ProjectInstallments
-                    .Where(i => i.ProjectId == projectId && i.IsActive)
+                    .Where(i => i.ProjectId == projectId && i.IsActive &&
+                        (!i.TargetShareholders.Any() || i.TargetShareholders.Any(target => target.ShareholderId == contribution.ShareholderId)))
                     .OrderBy(i => i.EndDate)
                     .ThenBy(i => i.Id)
                     .ToListAsync(cancellationToken);

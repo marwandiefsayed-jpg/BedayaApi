@@ -31,6 +31,8 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, ApiResponse<P
                 u.Id,
                 u.FullName,
                 u.Username,
+                u.Role,
+                GetRoleName(u.Role),
                 u.Phone,
                 u.IsActive,
                 u.CreatedAt,
@@ -40,4 +42,12 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, ApiResponse<P
         var result = await PaginatedList<UserDto>.CreateAsync(projectedQuery, request.PageIndex, request.PageSize, cancellationToken);
         return ApiResponse<PaginatedList<UserDto>>.SuccessResult(result);
     }
+
+    private static string GetRoleName(BedayaGroup.Domain.Enums.UserRole role) => role switch
+    {
+        BedayaGroup.Domain.Enums.UserRole.CompanyOwner => "مالك الشركة",
+        BedayaGroup.Domain.Enums.UserRole.ShareholdersOfficer => "مسؤول المساهمين",
+        BedayaGroup.Domain.Enums.UserRole.ExpensesOfficer => "مسؤول المصروفات والموردين",
+        _ => "مستخدم"
+    };
 }

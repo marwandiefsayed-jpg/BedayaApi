@@ -12,7 +12,7 @@ public record GetExpensesQuery(
     int PageIndex = 1,
     int PageSize = 10,
     int? ProjectId = null,
-    int? SupplierId = null,
+    int? StorageId = null,
     DateTime? FromDate = null,
     DateTime? ToDate = null,
     ExpenseStatus? Status = null
@@ -31,14 +31,14 @@ public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResp
     {
         var query = _context.Expenses
             .Include(e => e.Project)
-            .Include(e => e.Supplier)
+            .Include(e => e.Storage)
             .Include(e => e.CreatedByUser)
             .Include(e => e.CashTransactions)
             .AsNoTracking()
             .AsQueryable();
 
         if (request.ProjectId.HasValue) query = query.Where(e => e.ProjectId == request.ProjectId.Value);
-        if (request.SupplierId.HasValue) query = query.Where(e => e.SupplierId == request.SupplierId.Value);
+        if (request.StorageId.HasValue) query = query.Where(e => e.StorageId == request.StorageId.Value);
         if (request.FromDate.HasValue) query = query.Where(e => e.ExpenseDate >= request.FromDate.Value);
         if (request.ToDate.HasValue) query = query.Where(e => e.ExpenseDate <= request.ToDate.Value);
         if (request.Status.HasValue) query = query.Where(e => e.Status == request.Status.Value);
@@ -49,8 +49,8 @@ public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResp
                 e.ExpenseNumber,
                 e.ProjectId,
                 e.Project.Name,
-                e.SupplierId,
-                e.Supplier.Name,
+                e.StorageId,
+                e.Storage != null ? e.Storage.Name : null,
                 e.ExpenseDate,
                 e.Description,
                 e.TotalAmount,
@@ -87,7 +87,7 @@ public class GetExpenseByIdQueryHandler : IRequestHandler<GetExpenseByIdQuery, A
     {
         var e = await _context.Expenses
             .Include(e => e.Project)
-            .Include(e => e.Supplier)
+            .Include(e => e.Storage)
             .Include(e => e.CreatedByUser)
             .Include(e => e.CashTransactions)
             .AsNoTracking()
@@ -106,8 +106,8 @@ public class GetExpenseByIdQueryHandler : IRequestHandler<GetExpenseByIdQuery, A
             e.ExpenseNumber,
             e.ProjectId,
             e.Project.Name,
-            e.SupplierId,
-            e.Supplier.Name,
+            e.StorageId,
+            e.Storage?.Name,
             e.ExpenseDate,
             e.Description,
             e.TotalAmount,
@@ -143,7 +143,7 @@ public class GetDailyExpensesByProjectQueryHandler : IRequestHandler<GetDailyExp
     {
         var query = _context.Expenses
             .Include(e => e.Project)
-            .Include(e => e.Supplier)
+            .Include(e => e.Storage)
             .Include(e => e.CreatedByUser)
             .Include(e => e.CashTransactions)
             .Where(e => e.ProjectId == request.ProjectId)
@@ -168,8 +168,8 @@ public class GetDailyExpensesByProjectQueryHandler : IRequestHandler<GetDailyExp
                         e.ExpenseNumber,
                         e.ProjectId,
                         e.Project.Name,
-                        e.SupplierId,
-                        e.Supplier.Name,
+                        e.StorageId,
+                        e.Storage?.Name,
                         e.ExpenseDate,
                         e.Description,
                         e.TotalAmount,

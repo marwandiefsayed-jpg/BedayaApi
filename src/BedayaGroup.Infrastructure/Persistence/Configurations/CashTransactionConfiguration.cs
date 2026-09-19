@@ -43,11 +43,6 @@ public class CashTransactionConfiguration : IEntityTypeConfiguration<CashTransac
             .HasForeignKey(ct => ct.ExpenseId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(ct => ct.Advance)
-            .WithMany(a => a.CashTransactions)
-            .HasForeignKey(ct => ct.AdvanceId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasOne(ct => ct.CreatedByUser)
             .WithMany()
             .HasForeignKey(ct => ct.CreatedByUserId)

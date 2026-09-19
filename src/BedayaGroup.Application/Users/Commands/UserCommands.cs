@@ -51,6 +51,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ApiRe
             Username = req.Username,
             PasswordHash = _passwordHasher.HashPassword(req.Password),
             Phone = req.Phone,
+            Role = req.Role,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
         };
@@ -58,11 +59,19 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, ApiRe
         _context.Users.Add(user);
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _auditService.LogAsync("Create", "User", user.Id.ToString(), null, new { user.Username, user.FullName }, cancellationToken);
+        await _auditService.LogAsync("Create", "User", user.Id.ToString(), null, new { user.Username, user.FullName, user.Role }, cancellationToken);
 
-        var dto = new UserDto(user.Id, user.FullName, user.Username, user.Phone, user.IsActive, user.CreatedAt, user.LastLoginAt);
+        var dto = new UserDto(user.Id, user.FullName, user.Username, user.Role, GetRoleName(user.Role), user.Phone, user.IsActive, user.CreatedAt, user.LastLoginAt);
         return ApiResponse<UserDto>.SuccessResult(dto, "تم إنشاء المستخدم بنجاح");
     }
+
+    private static string GetRoleName(BedayaGroup.Domain.Enums.UserRole role) => role switch
+    {
+        BedayaGroup.Domain.Enums.UserRole.CompanyOwner => "مالك الشركة",
+        BedayaGroup.Domain.Enums.UserRole.ShareholdersOfficer => "مسؤول المساهمين",
+        BedayaGroup.Domain.Enums.UserRole.ExpensesOfficer => "مسؤول المصروفات والموردين",
+        _ => "مستخدم"
+    };
 }
 
 public record UpdateUserCommand(int Id, UpdateUserRequest Request) : IRequest<ApiResponse<UserDto>>;
@@ -86,18 +95,27 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ApiRe
             throw new NotFoundException("المستخدم غير موجود");
         }
 
-        var oldValues = new { user.FullName, user.Phone, user.IsActive };
+        var oldValues = new { user.FullName, user.Phone, user.Role, user.IsActive };
 
         user.FullName = request.Request.FullName;
         user.Phone = request.Request.Phone;
+        user.Role = request.Request.Role;
         user.IsActive = request.Request.IsActive;
         user.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _auditService.LogAsync("Update", "User", user.Id.ToString(), oldValues, new { user.FullName, user.Phone, user.IsActive }, cancellationToken);
+        await _auditService.LogAsync("Update", "User", user.Id.ToString(), oldValues, new { user.FullName, user.Phone, user.Role, user.IsActive }, cancellationToken);
 
-        var dto = new UserDto(user.Id, user.FullName, user.Username, user.Phone, user.IsActive, user.CreatedAt, user.LastLoginAt);
+        var dto = new UserDto(user.Id, user.FullName, user.Username, user.Role, GetRoleName(user.Role), user.Phone, user.IsActive, user.CreatedAt, user.LastLoginAt);
         return ApiResponse<UserDto>.SuccessResult(dto, "تم تحديث بيانات المستخدم بنجاح");
     }
+
+    private static string GetRoleName(BedayaGroup.Domain.Enums.UserRole role) => role switch
+    {
+        BedayaGroup.Domain.Enums.UserRole.CompanyOwner => "مالك الشركة",
+        BedayaGroup.Domain.Enums.UserRole.ShareholdersOfficer => "مسؤول المساهمين",
+        BedayaGroup.Domain.Enums.UserRole.ExpensesOfficer => "مسؤول المصروفات والموردين",
+        _ => "مستخدم"
+    };
 }

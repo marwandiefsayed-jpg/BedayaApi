@@ -14,4 +14,5 @@ public class ProjectInstallment : BaseEntity
     public bool IsActive { get; set; } = true;
 
     public Project Project { get; set; } = null!;
+    public ICollection<ProjectInstallmentShareholder> TargetShareholders { get; set; } = new List<ProjectInstallmentShareholder>();
 }

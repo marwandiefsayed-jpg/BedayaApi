@@ -18,28 +18,9 @@ public static class DbInitializer
             await context.Database.MigrateAsync();
             logger.LogInformation("Database migrations applied successfully.");
 
-            // Clean all domain data except Users to allow clean testing
-            context.ShareholderPaymentAllocations.RemoveRange(context.ShareholderPaymentAllocations);
-            context.ShareholderContributions.RemoveRange(context.ShareholderContributions);
-            context.ShareholderInstallmentPenalties.RemoveRange(context.ShareholderInstallmentPenalties);
-            context.ProjectInstallments.RemoveRange(context.ProjectInstallments);
-            context.Shares.RemoveRange(context.Shares);
-            context.Shareholders.RemoveRange(context.Shareholders);
-            context.StorageTransactions.RemoveRange(context.StorageTransactions);
-            context.Storages.RemoveRange(context.Storages);
-            context.CashTransactions.RemoveRange(context.CashTransactions);
-            context.CashStorages.RemoveRange(context.CashStorages);
-            context.Expenses.RemoveRange(context.Expenses);
-            context.Advances.RemoveRange(context.Advances);
-            context.ProjectEngineers.RemoveRange(context.ProjectEngineers);
-            context.Engineers.RemoveRange(context.Engineers);
-            context.Suppliers.RemoveRange(context.Suppliers);
-            context.Projects.RemoveRange(context.Projects);
-            context.AuditLogs.RemoveRange(context.AuditLogs);
-            await context.SaveChangesAsync();
-
-            // Seed default admin user
-            if (!await context.Users.AnyAsync(u => u.Username == "admin"))
+            // Seed default admin user (CompanyOwner)
+            var adminUser = await context.Users.FirstOrDefaultAsync(u => u.Username == "admin");
+            if (adminUser == null)
             {
                 context.Users.Add(new User
                 {
@@ -47,20 +28,48 @@ public static class DbInitializer
                     Username = "admin",
                     PasswordHash = passwordHasher.HashPassword("Admin@123456"),
                     Phone = "01000000001",
+                    Role = Domain.Enums.UserRole.CompanyOwner,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+            else if (adminUser.Role == 0)
+            {
+                adminUser.Role = Domain.Enums.UserRole.CompanyOwner;
+            }
+
+            // Ensure no user has Role == 0
+            var unassignedUsers = await context.Users.Where(u => (int)u.Role == 0).ToListAsync();
+            foreach (var u in unassignedUsers)
+            {
+                u.Role = Domain.Enums.UserRole.CompanyOwner;
+            }
+
+            // Seed default shareholder officer user
+            if (!await context.Users.AnyAsync(u => u.Username == "shareholder_officer"))
+            {
+                context.Users.Add(new User
+                {
+                    FullName = "مسؤول المساهمين",
+                    Username = "shareholder_officer",
+                    PasswordHash = passwordHasher.HashPassword("Share@123456"),
+                    Phone = "01000000002",
+                    Role = Domain.Enums.UserRole.ShareholdersOfficer,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 });
             }
 
-            // Seed default calculator user
-            if (!await context.Users.AnyAsync(u => u.Username == "calculator"))
+            // Seed default expenses officer user
+            if (!await context.Users.AnyAsync(u => u.Username == "expenses_officer"))
             {
                 context.Users.Add(new User
                 {
-                    FullName = "المحاسب المسؤول",
-                    Username = "calculator",
-                    PasswordHash = passwordHasher.HashPassword("Calc@123456"),
+                    FullName = "مسؤول المصروفات والموردين",
+                    Username = "expenses_officer",
+                    PasswordHash = passwordHasher.HashPassword("Expense@123456"),
                     Phone = "01000000003",
+                    Role = Domain.Enums.UserRole.ExpensesOfficer,
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 });

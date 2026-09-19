@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BedayaGroup.API.Controllers;
 
 [Route("api/shareholders")]
-[Authorize]
+[Authorize(Policy = "ShareholdersAccess")]
 public class ShareholdersController : ApiControllerBase
 {
     [HttpGet]
@@ -26,7 +26,7 @@ public class ShareholdersController : ApiControllerBase
     }
 
     [HttpPost]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "ShareholdersAccess")]
     public async Task<ActionResult<ApiResponse<ShareholderDto>>> CreateShareholder([FromBody] CreateShareholderRequest request)
     {
         var result = await Mediator.Send(new CreateShareholderCommand(request));
@@ -35,7 +35,7 @@ public class ShareholdersController : ApiControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "ShareholdersAccess")]
     public async Task<ActionResult<ApiResponse<ShareholderDto>>> UpdateShareholder(int id, [FromBody] UpdateShareholderRequest request)
     {
         var result = await Mediator.Send(new UpdateShareholderCommand(id, request));
@@ -44,7 +44,7 @@ public class ShareholdersController : ApiControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "CompanyOwnerOnly")]
     public async Task<ActionResult<ApiResponse<bool>>> DeleteShareholder(int id)
     {
         var result = await Mediator.Send(new DeleteShareholderCommand(id));
@@ -81,7 +81,7 @@ public class ShareholdersController : ApiControllerBase
 
     [HttpDelete("contributions/{contributionId}")]
     [HttpDelete("{id}/contributions/{contributionId}")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "CompanyOwnerOnly")]
     public async Task<ActionResult<ApiResponse<bool>>> DeleteContribution(int contributionId)
     {
         var result = await Mediator.Send(new DeleteShareholderContributionCommand(contributionId));
@@ -120,8 +120,9 @@ public class ShareholdersController : ApiControllerBase
     /// DELETE /api/shareholders/penalties/{penaltyId}
     /// </summary>
     [HttpDelete("penalties/{penaltyId}")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "CompanyOwnerOnly")]
     public async Task<ActionResult<ApiResponse<bool>>> DeletePenalty(int penaltyId)
+
     {
         var result = await Mediator.Send(new DeleteShareholderPenaltyCommand(penaltyId));
         if (!result.Success) return BadRequest(result);

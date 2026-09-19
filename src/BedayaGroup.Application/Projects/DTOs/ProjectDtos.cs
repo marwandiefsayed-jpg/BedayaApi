@@ -18,7 +18,9 @@ public record ProjectDto(
     string Name,
     DateTime? StartDate,
     bool IsActive,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    int? CashStorageId = null,
+    decimal CashBalance = 0m
 );
 
 public record ProjectFinancialSummaryDto(

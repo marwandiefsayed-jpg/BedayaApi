@@ -28,8 +28,8 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<IReceiptsPdfGenerator, ReceiptsPdfGenerator>();
-        services.AddScoped<ISupplierStatementPdfGenerator, SupplierStatementPdfGenerator>();
         services.AddHttpContextAccessor();
+
 
         // JWT Authentication Setup
         var jwtSettings = configuration.GetSection("JwtSettings");
@@ -54,16 +54,42 @@ public static class DependencyInjection
                 ValidIssuer = issuer,
                 ValidateAudience = true,
                 ValidAudience = audience,
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                RoleClaimType = System.Security.Claims.ClaimTypes.Role
             };
         });
 
-        // Authorization Policies (Roles removed - all authenticated users have access)
+        // Role-Based Authorization Policies
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("CompanyOwnerOnly", policy => policy.RequireAuthenticatedUser());
-            options.AddPolicy("CompanyOrProjectOwner", policy => policy.RequireAuthenticatedUser());
-            options.AddPolicy("FinancialWriteAccess", policy => policy.RequireAuthenticatedUser());
+            options.AddPolicy("CompanyOwnerOnly", policy => policy.RequireRole(
+                Domain.Enums.UserRole.CompanyOwner.ToString(),
+                ((int)Domain.Enums.UserRole.CompanyOwner).ToString(),
+                "1"
+            ));
+            options.AddPolicy("ShareholdersAccess", policy => policy.RequireRole(
+                Domain.Enums.UserRole.CompanyOwner.ToString(),
+                Domain.Enums.UserRole.ShareholdersOfficer.ToString(),
+                ((int)Domain.Enums.UserRole.CompanyOwner).ToString(),
+                ((int)Domain.Enums.UserRole.ShareholdersOfficer).ToString(),
+                "1", "2"
+            ));
+            options.AddPolicy("ExpensesAccess", policy => policy.RequireRole(
+                Domain.Enums.UserRole.CompanyOwner.ToString(),
+                Domain.Enums.UserRole.ExpensesOfficer.ToString(),
+                ((int)Domain.Enums.UserRole.CompanyOwner).ToString(),
+                ((int)Domain.Enums.UserRole.ExpensesOfficer).ToString(),
+                "1", "3"
+            ));
+            options.AddPolicy("FinancialWriteAccess", policy => policy.RequireRole(
+                Domain.Enums.UserRole.CompanyOwner.ToString(),
+                Domain.Enums.UserRole.ShareholdersOfficer.ToString(),
+                Domain.Enums.UserRole.ExpensesOfficer.ToString(),
+                ((int)Domain.Enums.UserRole.CompanyOwner).ToString(),
+                ((int)Domain.Enums.UserRole.ShareholdersOfficer).ToString(),
+                ((int)Domain.Enums.UserRole.ExpensesOfficer).ToString(),
+                "1", "2", "3"
+            ));
             options.AddPolicy("AuthenticatedUser", policy => policy.RequireAuthenticatedUser());
         });
 

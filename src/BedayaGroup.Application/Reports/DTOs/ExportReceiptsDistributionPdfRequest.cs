@@ -4,6 +4,8 @@ public class ExportReceiptsDistributionPdfRequest
 {
     public int? ProjectId { get; set; }
     public int? ShareholderId { get; set; }
+    public List<int>? ShareholderIds { get; set; }
+    public bool OnlyOutstandingShareholders { get; set; }
     public int? ShareId { get; set; }
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
