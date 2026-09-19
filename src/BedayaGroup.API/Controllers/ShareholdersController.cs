@@ -60,7 +60,7 @@ public class ShareholdersController : ApiControllerBase
     }
 
     [HttpPost("{id}/contributions")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "ShareholdersAccess")]
     public async Task<ActionResult<ApiResponse<ShareholderContributionDto>>> RecordContribution(int id, [FromBody] RecordShareholderContributionRequest request)
     {
         if (id != request.ShareholderId) return BadRequest(ApiResponse.FailureResult("معرف المساهم غير متطابق"));
@@ -71,7 +71,7 @@ public class ShareholdersController : ApiControllerBase
 
     [HttpPut("contributions/{contributionId}")]
     [HttpPut("{id}/contributions/{contributionId}")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "ShareholdersAccess")]
     public async Task<ActionResult<ApiResponse<ShareholderContributionDto>>> UpdateContribution(int contributionId, [FromBody] UpdateShareholderContributionRequest request)
     {
         var result = await Mediator.Send(new UpdateShareholderContributionCommand(contributionId, request));
@@ -103,7 +103,7 @@ public class ShareholdersController : ApiControllerBase
     /// POST /api/shareholders/{id}/penalties
     /// </summary>
     [HttpPost("{id}/penalties")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "ShareholdersAccess")]
     public async Task<ActionResult<ApiResponse<ShareholderInstallmentPenaltyDto>>> AddPenalty(
         int id, [FromBody] AddShareholderPenaltyRequest request)
     {

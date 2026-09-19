@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BedayaGroup.API.Controllers;
 
 [Route("api/shares")]
-[Authorize]
+[Authorize(Policy = "ShareholdersAccess")]
 public class SharesController : ApiControllerBase
 {
     // ============== Shares ==============
@@ -40,7 +40,7 @@ public class SharesController : ApiControllerBase
 }
 
 [Route("api/projects/{projectId}/installments")]
-[Authorize]
+[Authorize(Policy = "ShareholdersAccess")]
 public class ProjectInstallmentsController : ApiControllerBase
 {
     // ============== Project Installments ==============
@@ -91,4 +91,3 @@ public class ProjectInstallmentsController : ApiControllerBase
         return Ok(result);
     }
 }
-

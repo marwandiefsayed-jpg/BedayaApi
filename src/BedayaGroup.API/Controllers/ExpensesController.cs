@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BedayaGroup.API.Controllers;
 
 [Route("api/expenses")]
-[Authorize]
+[Authorize(Policy = "ExpensesAccess")]
 public class ExpensesController : ApiControllerBase
 {
     [HttpGet]

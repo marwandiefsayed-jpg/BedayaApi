@@ -61,7 +61,7 @@ public class CashController : ApiControllerBase
     }
 
     [HttpPost("payments/expense")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "ExpensesAccess")]
     public async Task<ActionResult<ApiResponse<CashTransactionDto>>> RecordExpensePayment([FromBody] RecordExpensePaymentRequest request)
     {
         var result = await Mediator.Send(new RecordExpensePaymentCommand(request));
@@ -70,7 +70,7 @@ public class CashController : ApiControllerBase
     }
 
     [HttpDelete("payments/expense/{transactionId}")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "ExpensesAccess")]
     public async Task<ActionResult<ApiResponse<bool>>> DeleteExpensePayment(int transactionId)
     {
         var result = await Mediator.Send(new DeleteExpensePaymentCommand(transactionId));

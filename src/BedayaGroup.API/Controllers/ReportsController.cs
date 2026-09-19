@@ -25,7 +25,7 @@ public class ReportsController : ApiControllerBase
     /// POST /api/reports/receipts-distribution/export-pdf
     /// </summary>
     [HttpPost("receipts-distribution/export-pdf")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "ShareholdersAccess")]
     public async Task<IActionResult> ExportReceiptsDistributionPdf([FromBody] ExportReceiptsDistributionPdfRequest request)
     {
         var result = await Mediator.Send(new ExportReceiptsDistributionPdfQuery(request));

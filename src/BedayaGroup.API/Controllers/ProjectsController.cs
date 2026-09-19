@@ -65,6 +65,7 @@ public class ProjectsController : ApiControllerBase
     }
 
     [HttpGet("{projectId}/daily-expenses")]
+    [Authorize(Policy = "ExpensesAccess")]
     public async Task<ActionResult<ApiResponse<List<DailyExpenseGroupDto>>>> GetProjectDailyExpenses(int projectId, [FromQuery] DateTime? fromDate = null, [FromQuery] DateTime? toDate = null)
     {
         var result = await Mediator.Send(new GetDailyExpensesByProjectQuery(projectId, fromDate, toDate));
@@ -72,6 +73,7 @@ public class ProjectsController : ApiControllerBase
     }
 
     [HttpGet("{projectId}/shareholders")]
+    [Authorize(Policy = "ShareholdersAccess")]
     public async Task<ActionResult<ApiResponse<PaginatedList<ShareholderDto>>>> GetProjectShareholders(int projectId, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 50)
     {
         var result = await Mediator.Send(new GetShareholdersQuery(pageIndex, pageSize, null, projectId));
@@ -79,7 +81,7 @@ public class ProjectsController : ApiControllerBase
     }
 
     [HttpPost("{projectId}/export-expenses-pdf")]
-    [Authorize(Policy = "FinancialWriteAccess")]
+    [Authorize(Policy = "ExpensesAccess")]
     public async Task<IActionResult> ExportProjectExpensesPdf(int projectId, [FromQuery] string? materialName = null)
     {
         var result = await Mediator.Send(new ExportProjectExpensesPdfQuery(projectId, materialName));
