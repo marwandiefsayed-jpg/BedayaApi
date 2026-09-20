@@ -602,3 +602,4 @@ E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\publish\BedayaGroup.API.deps.j
 E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\publish\BedayaGroup.API.runtimeconfig.json
 E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\publish\BedayaGroup.API.staticwebassets.endpoints.json
 E:\BedayaApi\src\BedayaGroup.API\obj\Debug\net9.0\BedayaGr.09F4E01B.Up2Date
+E:\BedayaApi\src\BedayaGroup.API\bin\Debug\net9.0\appsettings.Production.json

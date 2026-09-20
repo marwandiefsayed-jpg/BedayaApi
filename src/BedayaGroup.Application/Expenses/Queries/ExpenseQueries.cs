@@ -15,7 +15,8 @@ public record GetExpensesQuery(
     int? StorageId = null,
     DateTime? FromDate = null,
     DateTime? ToDate = null,
-    ExpenseStatus? Status = null
+    ExpenseStatus? Status = null,
+    string? Search = null
 ) : IRequest<ApiResponse<PaginatedList<ExpenseDto>>>;
 
 public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResponse<PaginatedList<ExpenseDto>>>
@@ -42,6 +43,15 @@ public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResp
         if (request.FromDate.HasValue) query = query.Where(e => e.ExpenseDate >= request.FromDate.Value);
         if (request.ToDate.HasValue) query = query.Where(e => e.ExpenseDate <= request.ToDate.Value);
         if (request.Status.HasValue) query = query.Where(e => e.Status == request.Status.Value);
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var search = request.Search.Trim().ToLower();
+            query = query.Where(e =>
+                e.Description.ToLower().Contains(search) ||
+                (e.MaterialName != null && e.MaterialName.ToLower().Contains(search)) ||
+                e.Project.Name.ToLower().Contains(search) ||
+                (e.Storage != null && e.Storage.Name.ToLower().Contains(search)));
+        }
 
         var projectedQuery = query.OrderByDescending(e => e.ExpenseDate)
             .Select(e => new ExpenseDto(

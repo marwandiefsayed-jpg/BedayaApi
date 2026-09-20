@@ -13,9 +13,15 @@ public class ReportsController : ApiControllerBase
 {
     [HttpPost("storage-activity/export-pdf")]
     [Authorize(Policy = "FinancialWriteAccess")]
-    public async Task<IActionResult> ExportStorageActivityPdf([FromQuery] int? projectId, [FromQuery] int? cashStorageId, [FromQuery] CashTransactionType? type)
+    public async Task<IActionResult> ExportStorageActivityPdf(
+        [FromQuery] int? projectId,
+        [FromQuery] int? cashStorageId,
+        [FromQuery] CashTransactionType? type,
+        [FromQuery] DateTime? fromDate,
+        [FromQuery] DateTime? toDate,
+        [FromQuery] string? descriptionSearch)
     {
-        var result = await Mediator.Send(new ExportStorageActivityPdfQuery(projectId, cashStorageId, type));
+        var result = await Mediator.Send(new ExportStorageActivityPdfQuery(projectId, cashStorageId, type, fromDate, toDate, descriptionSearch));
         if (!result.Success || result.Data == null) return BadRequest(result);
         return File(result.Data.FileBytes, result.Data.ContentType, result.Data.FileName);
     }

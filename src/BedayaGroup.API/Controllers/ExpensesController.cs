@@ -21,9 +21,10 @@ public class ExpensesController : ApiControllerBase
         [FromQuery] int? storageId = null,
         [FromQuery] DateTime? fromDate = null,
         [FromQuery] DateTime? toDate = null,
-        [FromQuery] ExpenseStatus? status = null)
+        [FromQuery] ExpenseStatus? status = null,
+        [FromQuery] string? search = null)
     {
-        var result = await Mediator.Send(new GetExpensesQuery(pageIndex, pageSize, projectId, storageId, fromDate, toDate, status));
+        var result = await Mediator.Send(new GetExpensesQuery(pageIndex, pageSize, projectId, storageId, fromDate, toDate, status, search));
         return Ok(result);
     }
 
@@ -72,9 +73,9 @@ public class ExpensesController : ApiControllerBase
 
     [HttpPost("export-pdf")]
     [Authorize(Policy = "FinancialWriteAccess")]
-    public async Task<IActionResult> ExportExpensesPdf([FromQuery] int? projectId = null, [FromQuery] string? materialName = null)
+    public async Task<IActionResult> ExportExpensesPdf([FromQuery] int? projectId = null, [FromQuery] string? materialName = null, [FromQuery] string? descriptionSearch = null)
     {
-        var result = await Mediator.Send(new ExportProjectExpensesPdfQuery(projectId, materialName));
+        var result = await Mediator.Send(new ExportProjectExpensesPdfQuery(projectId, materialName, descriptionSearch));
         if (!result.Success || result.Data == null) return BadRequest(result);
         return File(result.Data.FileBytes, result.Data.ContentType, result.Data.FileName);
     }

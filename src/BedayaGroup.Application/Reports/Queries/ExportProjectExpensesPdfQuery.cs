@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BedayaGroup.Application.Reports.Queries;
 
-public record ExportProjectExpensesPdfQuery(int? ProjectId, string? MaterialName = null) : IRequest<ApiResponse<ExportPdfResultDto>>;
+public record ExportProjectExpensesPdfQuery(int? ProjectId, string? MaterialName = null, string? DescriptionSearch = null) : IRequest<ApiResponse<ExportPdfResultDto>>;
 
 public class ExportProjectExpensesPdfQueryHandler : IRequestHandler<ExportProjectExpensesPdfQuery, ApiResponse<ExportPdfResultDto>>
 {
@@ -53,6 +53,11 @@ public class ExportProjectExpensesPdfQueryHandler : IRequestHandler<ExportProjec
             var mat = query.MaterialName.Trim().ToLower();
             expensesQuery = expensesQuery.Where(e => e.MaterialName != null && e.MaterialName.ToLower().Contains(mat));
         }
+        if (!string.IsNullOrWhiteSpace(query.DescriptionSearch))
+        {
+            var description = query.DescriptionSearch.Trim().ToLower();
+            expensesQuery = expensesQuery.Where(e => e.Description.ToLower().Contains(description));
+        }
 
         var expenses = await expensesQuery
             .OrderByDescending(e => e.ExpenseDate)
@@ -89,7 +94,7 @@ public class ExportProjectExpensesPdfQueryHandler : IRequestHandler<ExportProjec
             entityName: "Project",
             entityId: query.ProjectId?.ToString() ?? "All",
             oldValues: null,
-            newValues: new { query.ProjectId, query.MaterialName, TotalAmount = totalAmount, Count = expenseItems.Count },
+            newValues: new { query.ProjectId, query.MaterialName, query.DescriptionSearch, TotalAmount = totalAmount, Count = expenseItems.Count },
             cancellationToken: cancellationToken
         );
 

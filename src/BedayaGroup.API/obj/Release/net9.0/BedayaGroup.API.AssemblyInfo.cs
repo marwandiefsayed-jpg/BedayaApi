@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BedayaGroup.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e3bd00917f0a32a241eccd9be9e6a1170f330fb5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5bbc94f562ac5c608ce9fa3c6380cd67f71328ed")]
 [assembly: System.Reflection.AssemblyProductAttribute("BedayaGroup.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BedayaGroup.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -7,17 +7,43 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BedayaGroup.Application.Reports.Queries;
 
-public record ExportStorageActivityPdfQuery(int? ProjectId, int? CashStorageId = null, CashTransactionType? Type = null) : IRequest<ApiResponse<ExportPdfResultDto>>;
+public record ExportStorageActivityPdfQuery(
+    int? ProjectId,
+    int? CashStorageId = null,
+    CashTransactionType? Type = null,
+    DateTime? FromDate = null,
+    DateTime? ToDate = null,
+    string? DescriptionSearch = null) : IRequest<ApiResponse<ExportPdfResultDto>>;
 
 public class ExportStorageActivityPdfQueryHandler(IApplicationDbContext context, IReceiptsPdfGenerator pdfGenerator) : IRequestHandler<ExportStorageActivityPdfQuery, ApiResponse<ExportPdfResultDto>>
 {
     public async Task<ApiResponse<ExportPdfResultDto>> Handle(ExportStorageActivityPdfQuery request, CancellationToken cancellationToken)
     {
+        if (request.FromDate.HasValue && request.ToDate.HasValue && request.FromDate.Value.Date > request.ToDate.Value.Date)
+            return ApiResponse<ExportPdfResultDto>.FailureResult("تاريخ البداية يجب أن يكون قبل أو مساوياً لتاريخ النهاية");
+
         var transactions = context.CashTransactions.Include(t => t.CashStorage).Include(t => t.Project).AsNoTracking();
         if (request.ProjectId.HasValue) transactions = transactions.Where(t => t.ProjectId == request.ProjectId && t.CashStorage.Type == CashStorageType.Project);
         else transactions = transactions.Where(t => t.CashStorage.Type != CashStorageType.Project);
         if (request.CashStorageId.HasValue) transactions = transactions.Where(t => t.CashStorageId == request.CashStorageId.Value);
         if (request.Type.HasValue) transactions = transactions.Where(t => t.Type == request.Type.Value);
+        if (!string.IsNullOrWhiteSpace(request.DescriptionSearch))
+        {
+            var search = request.DescriptionSearch.Trim().ToLower();
+            transactions = transactions.Where(t =>
+                (t.Description != null && t.Description.ToLower().Contains(search)) ||
+                (t.Expense != null && ((t.Expense.MaterialName != null && t.Expense.MaterialName.ToLower().Contains(search)) || t.Expense.Description.ToLower().Contains(search))));
+        }
+        if (request.FromDate.HasValue)
+        {
+            var startOfDay = request.FromDate.Value.Date;
+            transactions = transactions.Where(t => t.TransactionDate >= startOfDay);
+        }
+        if (request.ToDate.HasValue)
+        {
+            var dayAfterEnd = request.ToDate.Value.Date.AddDays(1);
+            transactions = transactions.Where(t => t.TransactionDate < dayAfterEnd);
+        }
         var rows = await transactions.OrderByDescending(t => t.TransactionDate).Select(t => new StorageActivityPdfItemDto(
             t.TransactionDate,
             t.Type.ToString(),

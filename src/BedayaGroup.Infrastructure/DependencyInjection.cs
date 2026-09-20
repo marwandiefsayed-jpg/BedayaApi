@@ -33,7 +33,17 @@ public static class DependencyInjection
 
         // JWT Authentication Setup
         var jwtSettings = configuration.GetSection("JwtSettings");
-        var secretKey = jwtSettings["Secret"] ?? "SuperSecretKeyForBedayaGroupApi_MustBeAtLeast32BytesLong!";
+        var secretKey = jwtSettings["Secret"];
+        if (string.IsNullOrWhiteSpace(secretKey))
+        {
+            throw new InvalidOperationException("Required configuration value 'JwtSettings:Secret' is missing.");
+        }
+
+        if (Encoding.UTF8.GetByteCount(secretKey) < 32)
+        {
+            throw new InvalidOperationException("Configuration value 'JwtSettings:Secret' must be at least 32 bytes for HS256.");
+        }
+
         var issuer = jwtSettings["Issuer"] ?? "BedayaGroupApi";
         var audience = jwtSettings["Audience"] ?? "BedayaGroupApp";
 

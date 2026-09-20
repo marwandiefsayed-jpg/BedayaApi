@@ -136,11 +136,12 @@ public class ExportReceiptsDistributionPdfQueryHandler
             dbQuery = dbQuery.Where(sc => sc.ContributionDate <= toDate);
         }
 
-        var contributions = await dbQuery
-            .OrderBy(sc => sc.Shareholder != null ? sc.Shareholder.Name : "")
-            .ThenByDescending(sc => sc.ContributionDate)
-            .ThenBy(sc => sc.Id)
-            .ToListAsync(cancellationToken);
+        var contributionsQuery = req.SortByNewest
+            ? dbQuery.OrderBy(sc => sc.Shareholder != null ? sc.Shareholder.Name : "")
+                .ThenByDescending(sc => sc.ContributionDate).ThenByDescending(sc => sc.Id)
+            : dbQuery.OrderBy(sc => sc.Shareholder != null ? sc.Shareholder.Name : "")
+                .ThenBy(sc => sc.ContributionDate).ThenBy(sc => sc.Id);
+        var contributions = await contributionsQuery.ToListAsync(cancellationToken);
 
         // 4. Fetch Stored Payment Allocations (Without Recalculating)
         var contributionIds = contributions.Select(c => c.Id).ToList();
@@ -338,6 +339,17 @@ public class ExportReceiptsDistributionPdfQueryHandler
             if (req.OnlyOutstandingShareholders)
             {
                 summaries = summaries.Where(s => s.TotalRemaining > 0m).ToList();
+
+                // The unpaid report must contain totals and receipts for unpaid shareholders only.
+                // Without this, the table was filtered but the summary cards still included every shareholder.
+                var outstandingShareholderIds = summaries.Select(s => s.Id).ToHashSet();
+                var outstandingContributionIds = contributions
+                    .Where(contribution => outstandingShareholderIds.Contains(contribution.ShareholderId))
+                    .Select(contribution => contribution.Id)
+                    .ToHashSet();
+                receiptItems = receiptItems.Where(receipt => outstandingContributionIds.Contains(receipt.Id)).ToList();
+                totalExpected = summaries.Sum(s => s.TotalExpected);
+                totalRemaining = summaries.Sum(s => s.TotalRemaining);
             }
 
             shareholderSummariesList = summaries.OrderBy(s => s.Name).ToList();
@@ -373,6 +385,7 @@ public class ExportReceiptsDistributionPdfQueryHandler
                 req.ShareId,
                 req.FromDate,
                 req.ToDate,
+                req.SortByNewest,
                 ExportedAt = DateTime.UtcNow
             },
             cancellationToken: cancellationToken

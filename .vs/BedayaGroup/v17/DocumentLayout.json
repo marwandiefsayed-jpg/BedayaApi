@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "E:\\BedayaApi\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|e:\\bedayaapi\\src\\bedayagroup.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|solutionrelative:src\\bedayagroup.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|e:\\bedayaapi\\src\\bedayagroup.api\\bedayagroup.api.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
       "RelativeMoniker": "D:0:0:{50434646-2E63-4BC1-A6FB-6C71746CF78C}|src\\BedayaGroup.API\\BedayaGroup.API.csproj|solutionrelative:src\\bedayagroup.api\\bedayagroup.api.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
     },
@@ -34,19 +38,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.API\\appsettings.json",
+              "RelativeDocumentMoniker": "src\\BedayaGroup.API\\appsettings.json",
+              "ToolTip": "E:\\BedayaApi\\src\\BedayaGroup.API\\appsettings.json",
+              "RelativeToolTip": "src\\BedayaGroup.API\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-09-20T00:25:39.737Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "BedayaGroup.API.http",
               "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.http",
               "RelativeDocumentMoniker": "src\\BedayaGroup.API\\BedayaGroup.API.http",
               "ToolTip": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.http",
               "RelativeToolTip": "src\\BedayaGroup.API\\BedayaGroup.API.http",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
               "WhenOpened": "2026-09-17T00:36:06.426Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "ShareholderCommands.cs",
               "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
               "RelativeDocumentMoniker": "src\\BedayaGroup.Application\\Shareholders\\Commands\\ShareholderCommands.cs",
@@ -59,7 +76,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Microsoft.CSharp.Core.targets",
               "DocumentMoniker": "E:\\Visual Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
               "RelativeDocumentMoniker": "..\\Visual Community\\MSBuild\\Current\\Bin\\Roslyn\\Microsoft.CSharp.Core.targets",
@@ -71,7 +88,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "BedayaGroup.API.csproj",
               "DocumentMoniker": "E:\\BedayaApi\\src\\BedayaGroup.API\\BedayaGroup.API.csproj",
               "RelativeDocumentMoniker": "src\\BedayaGroup.API\\BedayaGroup.API.csproj",
@@ -79,7 +96,8 @@
               "RelativeToolTip": "src\\BedayaGroup.API\\BedayaGroup.API.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-09-01T15:45:52.41Z"
+              "WhenOpened": "2026-09-01T15:45:52.41Z",
+              "EditorCaption": ""
             }
           ]
         },

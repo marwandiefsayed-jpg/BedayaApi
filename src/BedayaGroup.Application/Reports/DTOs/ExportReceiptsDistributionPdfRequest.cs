@@ -9,4 +9,5 @@ public class ExportReceiptsDistributionPdfRequest
     public int? ShareId { get; set; }
     public DateTime? FromDate { get; set; }
     public DateTime? ToDate { get; set; }
+    public bool SortByNewest { get; set; } = true;
 }

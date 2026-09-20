@@ -99,7 +99,8 @@ public record GetCashTransactionsQuery(
     int? ProjectId = null,
     CashTransactionType? Type = null,
     DateTime? FromDate = null,
-    DateTime? ToDate = null
+    DateTime? ToDate = null,
+    string? DescriptionSearch = null
 ) : IRequest<ApiResponse<PaginatedList<CashTransactionDto>>>;
 
 public class GetCashTransactionsQueryHandler : IRequestHandler<GetCashTransactionsQuery, ApiResponse<PaginatedList<CashTransactionDto>>>
@@ -133,8 +134,23 @@ public class GetCashTransactionsQueryHandler : IRequestHandler<GetCashTransactio
             query = query.Where(ct => ct.CashStorage.Type != CashStorageType.Project);
         }
         if (request.Type.HasValue) query = query.Where(ct => ct.Type == request.Type.Value);
-        if (request.FromDate.HasValue) query = query.Where(ct => ct.TransactionDate >= request.FromDate.Value);
-        if (request.ToDate.HasValue) query = query.Where(ct => ct.TransactionDate <= request.ToDate.Value);
+        if (!string.IsNullOrWhiteSpace(request.DescriptionSearch))
+        {
+            var search = request.DescriptionSearch.Trim().ToLower();
+            query = query.Where(ct =>
+                (ct.Description != null && ct.Description.ToLower().Contains(search)) ||
+                (ct.Expense != null && ((ct.Expense.MaterialName != null && ct.Expense.MaterialName.ToLower().Contains(search)) || ct.Expense.Description.ToLower().Contains(search))));
+        }
+        if (request.FromDate.HasValue)
+        {
+            var startOfDay = request.FromDate.Value.Date;
+            query = query.Where(ct => ct.TransactionDate >= startOfDay);
+        }
+        if (request.ToDate.HasValue)
+        {
+            var dayAfterEnd = request.ToDate.Value.Date.AddDays(1);
+            query = query.Where(ct => ct.TransactionDate < dayAfterEnd);
+        }
 
         var projectedQuery = query.OrderByDescending(ct => ct.TransactionDate)
             .Select(ct => new CashTransactionDto(
