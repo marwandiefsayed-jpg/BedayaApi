@@ -82,9 +82,9 @@ public class ProjectsController : ApiControllerBase
 
     [HttpPost("{projectId}/export-expenses-pdf")]
     [Authorize(Policy = "ExpensesAccess")]
-    public async Task<IActionResult> ExportProjectExpensesPdf(int projectId, [FromQuery] string? materialName = null, [FromQuery] string? descriptionSearch = null)
+    public async Task<IActionResult> ExportProjectExpensesPdf(int projectId, [FromQuery] string? materialName = null, [FromQuery] string? descriptionSearch = null, [FromQuery] DateTime? fromDate = null, [FromQuery] DateTime? toDate = null, [FromQuery] bool sortByNewest = true)
     {
-        var result = await Mediator.Send(new ExportProjectExpensesPdfQuery(projectId, materialName, descriptionSearch));
+        var result = await Mediator.Send(new ExportProjectExpensesPdfQuery(projectId, materialName, descriptionSearch, fromDate, toDate, sortByNewest));
         if (!result.Success || result.Data == null)
         {
             return BadRequest(result);

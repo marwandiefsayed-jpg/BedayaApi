@@ -19,9 +19,10 @@ public class ReportsController : ApiControllerBase
         [FromQuery] CashTransactionType? type,
         [FromQuery] DateTime? fromDate,
         [FromQuery] DateTime? toDate,
-        [FromQuery] string? descriptionSearch)
+        [FromQuery] string? descriptionSearch,
+        [FromQuery] bool sortByNewest = true)
     {
-        var result = await Mediator.Send(new ExportStorageActivityPdfQuery(projectId, cashStorageId, type, fromDate, toDate, descriptionSearch));
+        var result = await Mediator.Send(new ExportStorageActivityPdfQuery(projectId, cashStorageId, type, fromDate, toDate, descriptionSearch, sortByNewest));
         if (!result.Success || result.Data == null) return BadRequest(result);
         return File(result.Data.FileBytes, result.Data.ContentType, result.Data.FileName);
     }

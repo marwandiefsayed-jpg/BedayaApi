@@ -22,9 +22,11 @@ public class ExpensesController : ApiControllerBase
         [FromQuery] DateTime? fromDate = null,
         [FromQuery] DateTime? toDate = null,
         [FromQuery] ExpenseStatus? status = null,
-        [FromQuery] string? search = null)
+        [FromQuery] string? search = null,
+        [FromQuery] string? materialName = null,
+        [FromQuery] bool sortByNewest = true)
     {
-        var result = await Mediator.Send(new GetExpensesQuery(pageIndex, pageSize, projectId, storageId, fromDate, toDate, status, search));
+        var result = await Mediator.Send(new GetExpensesQuery(pageIndex, pageSize, projectId, storageId, fromDate, toDate, status, search, materialName, sortByNewest));
         return Ok(result);
     }
 
@@ -73,9 +75,9 @@ public class ExpensesController : ApiControllerBase
 
     [HttpPost("export-pdf")]
     [Authorize(Policy = "FinancialWriteAccess")]
-    public async Task<IActionResult> ExportExpensesPdf([FromQuery] int? projectId = null, [FromQuery] string? materialName = null, [FromQuery] string? descriptionSearch = null)
+    public async Task<IActionResult> ExportExpensesPdf([FromQuery] int? projectId = null, [FromQuery] string? materialName = null, [FromQuery] string? descriptionSearch = null, [FromQuery] DateTime? fromDate = null, [FromQuery] DateTime? toDate = null, [FromQuery] bool sortByNewest = true)
     {
-        var result = await Mediator.Send(new ExportProjectExpensesPdfQuery(projectId, materialName, descriptionSearch));
+        var result = await Mediator.Send(new ExportProjectExpensesPdfQuery(projectId, materialName, descriptionSearch, fromDate, toDate, sortByNewest));
         if (!result.Success || result.Data == null) return BadRequest(result);
         return File(result.Data.FileBytes, result.Data.ContentType, result.Data.FileName);
     }

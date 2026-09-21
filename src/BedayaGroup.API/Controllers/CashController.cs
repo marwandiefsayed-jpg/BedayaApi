@@ -37,9 +37,10 @@ public class CashController : ApiControllerBase
         [FromQuery] CashTransactionType? type = null,
         [FromQuery] DateTime? fromDate = null,
         [FromQuery] DateTime? toDate = null,
-        [FromQuery] string? descriptionSearch = null)
+        [FromQuery] string? descriptionSearch = null,
+        [FromQuery] bool sortByNewest = true)
     {
-        var result = await Mediator.Send(new GetCashTransactionsQuery(pageIndex, pageSize, cashStorageId, projectId, type, fromDate, toDate, descriptionSearch));
+        var result = await Mediator.Send(new GetCashTransactionsQuery(pageIndex, pageSize, cashStorageId, projectId, type, fromDate, toDate, descriptionSearch, sortByNewest));
         return Ok(result);
     }
 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BedayaGroup.UnitTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5bbc94f562ac5c608ce9fa3c6380cd67f71328ed")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+56134bee87ec57c5f8d74903c7c6facbe29e2b4b")]
 [assembly: System.Reflection.AssemblyProductAttribute("BedayaGroup.UnitTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BedayaGroup.UnitTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

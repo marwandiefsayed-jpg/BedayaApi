@@ -16,7 +16,9 @@ public record GetExpensesQuery(
     DateTime? FromDate = null,
     DateTime? ToDate = null,
     ExpenseStatus? Status = null,
-    string? Search = null
+    string? Search = null,
+    string? MaterialName = null,
+    bool SortByNewest = true
 ) : IRequest<ApiResponse<PaginatedList<ExpenseDto>>>;
 
 public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResponse<PaginatedList<ExpenseDto>>>
@@ -43,17 +45,22 @@ public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, ApiResp
         if (request.FromDate.HasValue) query = query.Where(e => e.ExpenseDate >= request.FromDate.Value);
         if (request.ToDate.HasValue) query = query.Where(e => e.ExpenseDate <= request.ToDate.Value);
         if (request.Status.HasValue) query = query.Where(e => e.Status == request.Status.Value);
+        if (!string.IsNullOrWhiteSpace(request.MaterialName))
+        {
+            var material = request.MaterialName.Trim().ToLower();
+            query = query.Where(e => e.MaterialName != null && e.MaterialName.ToLower() == material);
+        }
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
             var search = request.Search.Trim().ToLower();
-            query = query.Where(e =>
-                e.Description.ToLower().Contains(search) ||
-                (e.MaterialName != null && e.MaterialName.ToLower().Contains(search)) ||
-                e.Project.Name.ToLower().Contains(search) ||
-                (e.Storage != null && e.Storage.Name.ToLower().Contains(search)));
+            // The page's search box is specifically for البيان. Keep it aligned with PDF export filtering.
+            query = query.Where(e => e.Description.ToLower().Contains(search));
         }
 
-        var projectedQuery = query.OrderByDescending(e => e.ExpenseDate)
+        // A unique tie-breaker is mandatory for stable database pagination.
+        var projectedQuery = (request.SortByNewest
+            ? query.OrderByDescending(e => e.ExpenseDate).ThenByDescending(e => e.Id)
+            : query.OrderBy(e => e.ExpenseDate).ThenBy(e => e.Id))
             .Select(e => new ExpenseDto(
                 e.Id,
                 e.ExpenseNumber,

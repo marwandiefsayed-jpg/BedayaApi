@@ -100,7 +100,8 @@ public record GetCashTransactionsQuery(
     CashTransactionType? Type = null,
     DateTime? FromDate = null,
     DateTime? ToDate = null,
-    string? DescriptionSearch = null
+    string? DescriptionSearch = null,
+    bool SortByNewest = true
 ) : IRequest<ApiResponse<PaginatedList<CashTransactionDto>>>;
 
 public class GetCashTransactionsQueryHandler : IRequestHandler<GetCashTransactionsQuery, ApiResponse<PaginatedList<CashTransactionDto>>>
@@ -152,7 +153,11 @@ public class GetCashTransactionsQueryHandler : IRequestHandler<GetCashTransactio
             query = query.Where(ct => ct.TransactionDate < dayAfterEnd);
         }
 
-        var projectedQuery = query.OrderByDescending(ct => ct.TransactionDate)
+        var orderedQuery = request.SortByNewest
+            ? query.OrderByDescending(ct => ct.TransactionDate)
+            : query.OrderBy(ct => ct.TransactionDate);
+
+        var projectedQuery = orderedQuery
             .Select(ct => new CashTransactionDto(
                 ct.Id,
                 ct.TransactionNumber,

@@ -327,21 +327,8 @@ public class UpdateExpenseCommandHandler : IRequestHandler<UpdateExpenseCommand,
             return ApiResponse<ExpenseDto>.FailureResult("بيانات المادة ووحدة القياس والكمية وسعر الوحدة مطلوبة");
         }
 
-        Storage? storage;
-        if (req.StorageId.HasValue)
-        {
-            storage = await _context.Storages
-                .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == req.StorageId.Value, cancellationToken);
-            if (storage == null)
-            {
-                return ApiResponse<ExpenseDto>.FailureResult("المخزن المحدد غير موجود");
-            }
-        }
-        else
-        {
-            storage = await ProjectMaterialStorage.GetOrCreateAsync(_context, expense.Project!, cancellationToken);
-        }
+        // Each project has one material storage; editing an expense must always use that storage.
+        var storage = await ProjectMaterialStorage.GetOrCreateAsync(_context, expense.Project!, cancellationToken);
 
         var calculatedTotal = req.Quantity * req.UnitPrice;
         var oldValues = new { expense.TotalAmount, expense.Description, expense.StorageId };
@@ -365,6 +352,21 @@ public class UpdateExpenseCommandHandler : IRequestHandler<UpdateExpenseCommand,
             paymentTx.Amount = calculatedTotal;
             paymentTx.TransactionDate = req.ExpenseDate;
             paymentTx.Description = $"سداد تلقائي للمصروف رقم {expense.ExpenseNumber}: {expense.Description}";
+        }
+
+        // Keep the automatic inventory purchase in sync with every editable expense field.
+        // This prevents the expense, cash transaction, and storage balance from diverging.
+        var storageTx = await _context.StorageTransactions
+            .FirstOrDefaultAsync(st => st.ReferenceNumber == expense.ExpenseNumber && st.Type == StorageTransactionType.Purchase, cancellationToken);
+        if (storageTx != null)
+        {
+            storageTx.StorageId = storage.Id;
+            storageTx.ProjectId = expense.ProjectId;
+            storageTx.TransactionDate = req.ExpenseDate;
+            storageTx.MaterialName = req.MaterialName.Trim();
+            storageTx.Unit = req.Unit.Trim();
+            storageTx.Quantity = req.Quantity;
+            storageTx.Description = $"تخزين تلقائي لشراء مادة للمصروف رقم {expense.ExpenseNumber}";
         }
 
         await _context.SaveChangesAsync(cancellationToken);

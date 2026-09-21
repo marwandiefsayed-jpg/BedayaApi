@@ -532,6 +532,18 @@ public class ReceiptsPdfGenerator : IReceiptsPdfGenerator
                                 c.Item().Text("إجمالي المصاريف").FontSize(8).FontColor("#991B1B");
                                 c.Item().Text($"{data.TotalAmount:N2} ج.م").FontSize(13).Bold().FontColor("#DC2626");
                             });
+
+                            row.RelativeItem().Padding(4).Background("#FFF7ED").Border(1).BorderColor("#FED7AA").Padding(10).Column(c =>
+                            {
+                                c.Item().Text("المصروفات الإدارية (10%)").FontSize(8).FontColor("#9A3412");
+                                c.Item().Text($"{data.AdministrativeExpenses:N2} ج.م").FontSize(13).Bold().FontColor("#EA580C");
+                            });
+
+                            row.RelativeItem().Padding(4).Background("#EFF6FF").Border(1).BorderColor("#BFDBFE").Padding(10).Column(c =>
+                            {
+                                c.Item().Text("الإجمالي شامل المصروفات الإدارية").FontSize(8).FontColor("#1D4ED8");
+                                c.Item().Text($"{data.GrandTotal:N2} ج.م").FontSize(13).Bold().FontColor("#2563EB");
+                            });
                         });
 
                         col.Item().Height(14);

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BedayaGroup.Application.Reports.Queries;
 
-public record ExportProjectExpensesPdfQuery(int? ProjectId, string? MaterialName = null, string? DescriptionSearch = null) : IRequest<ApiResponse<ExportPdfResultDto>>;
+public record ExportProjectExpensesPdfQuery(int? ProjectId, string? MaterialName = null, string? DescriptionSearch = null, DateTime? FromDate = null, DateTime? ToDate = null, bool SortByNewest = true) : IRequest<ApiResponse<ExportPdfResultDto>>;
 
 public class ExportProjectExpensesPdfQueryHandler : IRequestHandler<ExportProjectExpensesPdfQuery, ApiResponse<ExportPdfResultDto>>
 {
@@ -58,10 +58,12 @@ public class ExportProjectExpensesPdfQueryHandler : IRequestHandler<ExportProjec
             var description = query.DescriptionSearch.Trim().ToLower();
             expensesQuery = expensesQuery.Where(e => e.Description.ToLower().Contains(description));
         }
+        if (query.FromDate.HasValue) expensesQuery = expensesQuery.Where(e => e.ExpenseDate >= query.FromDate.Value.Date);
+        if (query.ToDate.HasValue) expensesQuery = expensesQuery.Where(e => e.ExpenseDate < query.ToDate.Value.Date.AddDays(1));
 
-        var expenses = await expensesQuery
-            .OrderByDescending(e => e.ExpenseDate)
-            .ThenByDescending(e => e.Id)
+        var expenses = await (query.SortByNewest
+            ? expensesQuery.OrderByDescending(e => e.ExpenseDate).ThenByDescending(e => e.Id)
+            : expensesQuery.OrderBy(e => e.ExpenseDate).ThenBy(e => e.Id))
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
@@ -78,13 +80,17 @@ public class ExportProjectExpensesPdfQueryHandler : IRequestHandler<ExportProjec
         )).ToList();
 
         var totalAmount = expenseItems.Sum(e => e.TotalAmount);
+        var administrativeExpenses = totalAmount * 0.10m;
+        var grandTotal = totalAmount + administrativeExpenses;
 
         var reportData = new ProjectExpensesPdfReportDto(
             projectName,
             query.MaterialName?.Trim(),
             DateTime.UtcNow.AddHours(3),
             expenseItems,
-            totalAmount
+            totalAmount,
+            administrativeExpenses,
+            grandTotal
         );
 
         var pdfBytes = _pdfGenerator.GenerateProjectExpensesPdf(reportData);
@@ -94,7 +100,7 @@ public class ExportProjectExpensesPdfQueryHandler : IRequestHandler<ExportProjec
             entityName: "Project",
             entityId: query.ProjectId?.ToString() ?? "All",
             oldValues: null,
-            newValues: new { query.ProjectId, query.MaterialName, query.DescriptionSearch, TotalAmount = totalAmount, Count = expenseItems.Count },
+            newValues: new { query.ProjectId, query.MaterialName, query.DescriptionSearch, query.SortByNewest, TotalAmount = totalAmount, AdministrativeExpenses = administrativeExpenses, GrandTotal = grandTotal, Count = expenseItems.Count },
             cancellationToken: cancellationToken
         );
 

@@ -119,3 +119,52 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ApiRe
         _ => "مستخدم"
     };
 }
+
+public record DeleteUserCommand(int Id) : IRequest<ApiResponse<bool>>;
+
+public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, ApiResponse<bool>>
+{
+    private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
+    private readonly IAuditService _auditService;
+
+    public DeleteUserCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService, IAuditService auditService)
+    {
+        _context = context;
+        _currentUserService = currentUserService;
+        _auditService = auditService;
+    }
+
+    public async Task<ApiResponse<bool>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.Id, cancellationToken);
+        if (user == null) throw new NotFoundException("المستخدم غير موجود");
+        if (_currentUserService.UserId == user.Id)
+            return ApiResponse<bool>.FailureResult("لا يمكن حذف الحساب المستخدم حالياً");
+        if (user.Role == BedayaGroup.Domain.Enums.UserRole.CompanyOwner)
+            return ApiResponse<bool>.FailureResult("لا يمكن حذف حساب مالك الشركة");
+
+        var oldValues = new { user.Username, user.FullName, user.Role };
+        var replacementUserId = _currentUserService.UserId;
+        if (!replacementUserId.HasValue)
+            return ApiResponse<bool>.FailureResult("تعذر تحديد مالك الشركة المنفذ للحذف");
+
+        // Preserve every financial/history record. Creator references are reassigned to the
+        // deleting owner before the account is removed, avoiding foreign-key violations.
+        var contributions = await _context.ShareholderContributions.Where(x => x.CreatedByUserId == user.Id).ToListAsync(cancellationToken);
+        var expenses = await _context.Expenses.Where(x => x.CreatedByUserId == user.Id).ToListAsync(cancellationToken);
+        var cashTransactions = await _context.CashTransactions.Where(x => x.CreatedByUserId == user.Id).ToListAsync(cancellationToken);
+        var storageTransactions = await _context.StorageTransactions.Where(x => x.CreatedByUserId == user.Id).ToListAsync(cancellationToken);
+        var penalties = await _context.ShareholderInstallmentPenalties.Where(x => x.CreatedByUserId == user.Id).ToListAsync(cancellationToken);
+        foreach (var item in contributions) item.CreatedByUserId = replacementUserId.Value;
+        foreach (var item in expenses) item.CreatedByUserId = replacementUserId.Value;
+        foreach (var item in cashTransactions) item.CreatedByUserId = replacementUserId.Value;
+        foreach (var item in storageTransactions) item.CreatedByUserId = replacementUserId.Value;
+        foreach (var item in penalties) item.CreatedByUserId = replacementUserId.Value;
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync(cancellationToken);
+        await _auditService.LogAsync("Delete", "User", request.Id.ToString(), oldValues, new { ReassignedToUserId = replacementUserId.Value }, cancellationToken);
+        return ApiResponse<bool>.SuccessResult(true, "تم حذف المستخدم بنجاح");
+    }
+}

@@ -13,7 +13,8 @@ public record ExportStorageActivityPdfQuery(
     CashTransactionType? Type = null,
     DateTime? FromDate = null,
     DateTime? ToDate = null,
-    string? DescriptionSearch = null) : IRequest<ApiResponse<ExportPdfResultDto>>;
+    string? DescriptionSearch = null,
+    bool SortByNewest = true) : IRequest<ApiResponse<ExportPdfResultDto>>;
 
 public class ExportStorageActivityPdfQueryHandler(IApplicationDbContext context, IReceiptsPdfGenerator pdfGenerator) : IRequestHandler<ExportStorageActivityPdfQuery, ApiResponse<ExportPdfResultDto>>
 {
@@ -44,7 +45,10 @@ public class ExportStorageActivityPdfQueryHandler(IApplicationDbContext context,
             var dayAfterEnd = request.ToDate.Value.Date.AddDays(1);
             transactions = transactions.Where(t => t.TransactionDate < dayAfterEnd);
         }
-        var rows = await transactions.OrderByDescending(t => t.TransactionDate).Select(t => new StorageActivityPdfItemDto(
+        var orderedTransactions = request.SortByNewest
+            ? transactions.OrderByDescending(t => t.TransactionDate)
+            : transactions.OrderBy(t => t.TransactionDate);
+        var rows = await orderedTransactions.Select(t => new StorageActivityPdfItemDto(
             t.TransactionDate,
             t.Type.ToString(),
             t.Project != null ? t.Project.Name : null,

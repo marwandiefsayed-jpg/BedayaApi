@@ -26,5 +26,7 @@ public record ProjectExpensesPdfReportDto(
     string? MaterialFilterName,
     DateTime GeneratedAt,
     List<ProjectExpensePdfItemDto> Expenses,
-    decimal TotalAmount
+    decimal TotalAmount,
+    decimal AdministrativeExpenses,
+    decimal GrandTotal
 );

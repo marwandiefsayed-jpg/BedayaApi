@@ -34,4 +34,12 @@ public class UsersController : ApiControllerBase
         if (!result.Success) return BadRequest(result);
         return Ok(result);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteUser(int id)
+    {
+        var result = await Mediator.Send(new DeleteUserCommand(id));
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
+    }
 }
